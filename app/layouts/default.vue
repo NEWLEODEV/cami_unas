@@ -57,5 +57,6 @@ const handleLogout = async () => {
         <slot />
       </div>
     </main>
+    <AppDialog />
   </div>
 </template>

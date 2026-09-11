@@ -1,11 +1,13 @@
 <script setup>
-import { Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2 } from 'lucide-vue-next'
+import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2 } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
+const { showConfirm, showAlert } = useDialog()
 const entries = ref([])
 const products = ref([])
 const loading = ref(true)
 const loadingProducts = ref(true)
+const searchQuery = ref('')
 
 // Modal state
 const isModalOpen = ref(false)
@@ -104,13 +106,14 @@ const openEditModal = async (entry) => {
 }
 
 const deleteEntry = async (id) => {
-  if (!confirm('Tem certeza que deseja excluir esta movimentação de estoque?')) return
+  const confirmed = await showConfirm('Tem certeza que deseja excluir esta movimentação de estoque?')
+  if (!confirmed) return
   
   const { error } = await supabase.from('inventory_entries').delete().eq('id', id)
   if (!error) {
     fetchEntries()
   } else {
-    alert('Erro ao excluir entrada: ' + error.message)
+    await showAlert('Erro ao excluir entrada: ' + error.message, 'Erro')
   }
 }
 
@@ -146,7 +149,7 @@ const saveEntry = async () => {
     resetForm()
     fetchEntries()
   } else {
-    alert('Erro ao salvar entrada: ' + error.message)
+    await showAlert('Erro ao salvar entrada: ' + error.message, 'Erro')
   }
 }
 
@@ -164,6 +167,17 @@ const formatDate = (dateString) => {
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
+
+const filteredEntries = computed(() => {
+  if (!searchQuery.value) return entries.value
+  const query = searchQuery.value.toLowerCase()
+  return entries.value.filter(entry => 
+    (entry.products?.name && entry.products.name.toLowerCase().includes(query)) ||
+    (entry.products?.brand && entry.products.brand.toLowerCase().includes(query)) ||
+    (entry.products?.color && entry.products.color.toLowerCase().includes(query)) ||
+    (entry.products?.size_variation && entry.products.size_variation.toLowerCase().includes(query))
+  )
+})
 </script>
 
 <template>
@@ -173,10 +187,19 @@ const formatCurrency = (value) => {
         <h1 class="text-3xl font-bold text-rose-950 tracking-tight">Movimentações de Estoque</h1>
         <p class="text-slate-400 text-sm mt-1 font-medium">Histórico de entradas e compras de produtos.</p>
       </div>
-      <button @click="isModalOpen = true" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 hover:-translate-y-0.5 text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-md">
-        <ArrowDownToLine class="w-5 h-5" />
-        Registrar Entrada
-      </button>
+    </div>
+
+    <!-- Barra de Busca -->
+    <div class="bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3 w-full max-w-2xl">
+      <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
+        <Search class="w-5 h-5 text-brand-400" />
+      </div>
+      <input 
+        v-model="searchQuery" 
+        type="text" 
+        placeholder="Buscar por produto, marca, cor..." 
+        class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2"
+      >
     </div>
 
     <!-- Lista de Entradas -->
@@ -184,7 +207,7 @@ const formatCurrency = (value) => {
       <div v-if="loading" class="p-12 text-center text-slate-400 font-medium">
         Carregando movimentações...
       </div>
-      <div v-else-if="entries.length === 0" class="p-16 text-center flex flex-col items-center">
+      <div v-else-if="filteredEntries.length === 0" class="p-16 text-center flex flex-col items-center">
         <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-4 shadow-inner border border-brand-100/50">
           <PackageOpen class="w-10 h-10 text-brand-300" />
         </div>
@@ -205,7 +228,7 @@ const formatCurrency = (value) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="entry in entries" :key="entry.id" class="border-b border-brand-50/30 hover:bg-white transition-colors group">
+            <tr v-for="entry in filteredEntries" :key="entry.id" class="border-b border-brand-50/30 hover:bg-white transition-colors group">
               <td class="py-5 px-8">
                 <p class="font-semibold text-rose-950 group-hover:text-brand-600 transition-colors">{{ entry.products?.name || 'Produto Excluído' }}</p>
                 <p class="text-sm text-slate-400 mt-0.5" v-if="entry.products">
