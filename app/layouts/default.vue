@@ -1,5 +1,5 @@
 <script setup>
-import { LayoutDashboard, Package, ShoppingCart, LogOut } from 'lucide-vue-next'
+import { LayoutDashboard, Package, Droplet, LogOut } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 
@@ -23,13 +23,10 @@ const handleLogout = async () => {
           Dashboard
         </NuxtLink>
          <NuxtLink to="/estoque" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
-          <ShoppingCart class="w-5 h-5" />
+          <Droplet class="w-5 h-5" />
           Meus Esmaltes
         </NuxtLink>
-        <NuxtLink to="/produtos" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
-          <Package class="w-5 h-5" />
-          Cadastrar Produtos
-        </NuxtLink>
+
       </nav>
       
       <div class="p-6">

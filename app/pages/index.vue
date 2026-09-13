@@ -46,7 +46,7 @@ onMounted(async () => {
           expList.push({
             id: entry.id,
             name: entry.products?.name || 'Produto Excluído',
-            expiration: expDate.toLocaleDateString('pt-BR', {timeZone: 'UTC'}),
+            expiration: expDate.toLocaleDateString('pt-BR', {timeZone: 'UTC', month: '2-digit', year: 'numeric'}),
             daysLeft: diffDays
           })
         }

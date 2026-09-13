@@ -32,9 +32,10 @@ const handleLogin = async () => {
   <div class="min-h-screen flex items-center justify-center bg-[url(https://www.transparenttextures.com/patterns/cubes.png)] bg-gradient-to-br from-brand-50 via-white to-brand-100 p-4">
     <div class="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-hover p-10 border border-white">
       <div class="text-center mb-10">
-        <div class="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-sm border border-white">🌸</div>
-        <h1 class="text-3xl font-bold text-brand-700 tracking-tight">Cami Unas</h1>
-        <p class="text-brand-400 mt-1 font-medium">Controle de Estoque</p>
+        <div class="flex justify-center mx-auto mb-8">
+          <img src="/camis.png" alt="Camis" class="h-32 w-auto object-contain drop-shadow-md hover:scale-105 transition-transform duration-500" />
+        </div>
+        <p class="text-brand-400 mt-1 font-medium">Coleção</p>
       </div>
       
       <div v-if="errorMsg" class="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center">
