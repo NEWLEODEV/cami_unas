@@ -14,7 +14,7 @@ const handleLogout = async () => {
     <!-- Sidebar (Floating Style) -->
     <aside class="w-64 bg-white/80 backdrop-blur-md border-r border-brand-100 flex flex-col shrink-0 m-4 rounded-3xl shadow-soft">
       <div class="h-20 flex items-center justify-center border-b border-brand-50 mx-6">
-        <h1 class="text-2xl font-bold text-brand-600 tracking-tight">Cami Unhas <span class="text-brand-300">🌸</span></h1>
+        <img src="/camis.png" alt="Cami Unhas" class="h-12 w-auto object-contain" />
       </div>
       
       <nav class="flex-1 p-6 space-y-2">
