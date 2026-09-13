@@ -6,7 +6,16 @@ import imageCompression from 'browser-image-compression'
 const supabase = useSupabaseClient()
 const { showAlert } = useDialog()
 
-const emit = defineEmits(['saved', 'close'])
+const emit = defineEmits(['saved'])
+
+const formatTitleCase = (str) => {
+  if (!str) return str;
+  return str.trim().split(/\s+/).map((word, index) => {
+    const lower = word.toLowerCase();
+    if (index > 0 && ['do', 'da', 'de', 'e', 'das', 'dos', 'com', 'sem', 'para'].includes(lower)) return lower;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }).join(' ');
+}
 
 const isModalOpen = ref(false)
 const isSubmitting = ref(false)
@@ -219,11 +228,16 @@ const openEditModal = async (productId, inventoryEntryId = null) => {
 const saveProduct = async () => {
   isSubmitting.value = true
   
-  const finalBrand = selectedBrand.value === 'Outra' ? customBrand.value : selectedBrand.value;
+  let finalBrand = selectedBrand.value === 'Outra' ? customBrand.value : selectedBrand.value;
+  finalBrand = formatTitleCase(finalBrand);
   newProduct.value.brand = finalBrand;
 
-  const finalType = newProduct.value.type === 'Outros' ? customType.value : newProduct.value.type;
+  let finalType = newProduct.value.type === 'Outros' ? customType.value : newProduct.value.type;
+  if (newProduct.value.type === 'Outros') finalType = formatTitleCase(finalType);
   
+  newProduct.value.color = formatTitleCase(newProduct.value.color);
+  newProduct.value.collection = formatTitleCase(newProduct.value.collection);
+
   const generatedName = `${finalBrand} ${newProduct.value.color} (${finalType})`.trim()
 
   const payload = {
@@ -397,20 +411,27 @@ defineExpose({
           <!-- Categoria e Marca -->
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1">Categoria *</label>
-            <select v-model="newProduct.category" required class="w-full px-3 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors">
-              <option value="Esmalte">Esmalte</option>
-              <option value="Base/Tratamento">Base / Tratamento</option>
-              <option value="Utensílio">Utensílio</option>
-              <option value="Descartável">Descartável</option>
-              <option value="Outros">Outros</option>
-            </select>
+            <CustomSelect
+              v-model="newProduct.category"
+              :options="['Esmalte', 'Base/Tratamento', 'Utensílio', 'Descartável', 'Outros']"
+              placeholder="Selecione a categoria"
+              variant="outline"
+              :required="true"
+              :showEmptyOption="false"
+            />
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1">Marca *</label>
-            <select v-model="selectedBrand" required class="w-full px-3 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" :class="{'mb-2': selectedBrand === 'Outra'}">
-              <option v-for="brand in currentBrandOptions" :key="brand" :value="brand">{{ brand }}</option>
-              <option value="Outra">Outra (incluir marca)</option>
-            </select>
+            <div :class="{'mb-2': selectedBrand === 'Outra'}">
+              <CustomSelect
+                v-model="selectedBrand"
+                :options="[...currentBrandOptions, { label: 'Outra (incluir marca)', value: 'Outra' }]"
+                placeholder="Selecione a marca"
+                variant="outline"
+                :required="true"
+                :showEmptyOption="false"
+              />
+            </div>
             <input v-if="selectedBrand === 'Outra'" v-model="customBrand" required type="text" class="w-full px-3 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" placeholder="Digite o nome da marca">
           </div>
 
@@ -421,10 +442,16 @@ defineExpose({
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1">Tipo *</label>
-            <select v-model="newProduct.type" required class="w-full px-3 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" :class="{'mb-2': newProduct.type === 'Outros'}">
-              <option v-for="t in availableTypes" :key="t" :value="t">{{ t }}</option>
-              <option value="Outros">Outros (incluir tipo)</option>
-            </select>
+            <div :class="{'mb-2': newProduct.type === 'Outros'}">
+              <CustomSelect
+                v-model="newProduct.type"
+                :options="[...availableTypes, { label: 'Outros (incluir tipo)', value: 'Outros' }]"
+                placeholder="Selecione o tipo"
+                variant="outline"
+                :required="true"
+                :showEmptyOption="false"
+              />
+            </div>
             <input v-if="newProduct.type === 'Outros'" v-model="customType" required type="text" class="w-full px-3 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" placeholder="Digite o tipo do esmalte">
           </div>
 
@@ -438,12 +465,14 @@ defineExpose({
           <!-- Unidade e Tamanho -->
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1">Unidade de Medida *</label>
-            <select v-model="newProduct.unit_measure" required class="w-full px-3 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors">
-              <option value="Unidade">Unidade (un)</option>
-              <option value="Mililitro">Mililitro (ml)</option>
-              <option value="Grama">Grama (g)</option>
-              <option value="Kit">Kit</option>
-            </select>
+            <CustomSelect
+              v-model="newProduct.unit_measure"
+              :options="[{ label: 'Unidade (un)', value: 'Unidade' }, { label: 'Mililitro (ml)', value: 'Mililitro' }, { label: 'Grama (g)', value: 'Grama' }, { label: 'Kit', value: 'Kit' }]"
+              placeholder="Selecione a unidade"
+              variant="outline"
+              :required="true"
+              :showEmptyOption="false"
+            />
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1">Variação / Tamanho</label>

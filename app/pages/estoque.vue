@@ -10,6 +10,10 @@ const loadingProducts = ref(true)
 const searchQuery = ref('')
 const viewMode = ref('medium') // 'medium', 'large', 'details'
 
+const filterBrand = ref('')
+const filterCollection = ref('')
+const filterMaxPrice = ref('')
+
 const expandedImage = ref(null)
 const productModal = ref(null)
 
@@ -26,6 +30,7 @@ const fetchEntries = async () => {
         name,
         brand,
         color,
+        collection,
         size_variation,
         image_url
       )
@@ -84,15 +89,55 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
+const uniqueEntryBrands = computed(() => {
+  const brands = entries.value.map(e => e.products?.brand).filter(Boolean)
+  const map = new Map()
+  brands.forEach(b => {
+    const lower = b.trim().toLowerCase()
+    if (!map.has(lower)) map.set(lower, b.trim())
+  })
+  return Array.from(map.values()).sort()
+})
+
+const uniqueCollections = computed(() => {
+  const collections = entries.value.map(e => e.products?.collection).filter(Boolean)
+  const map = new Map()
+  collections.forEach(c => {
+    const lower = c.trim().toLowerCase()
+    if (!map.has(lower)) map.set(lower, c.trim())
+  })
+  return Array.from(map.values()).sort()
+})
+
 const filteredEntries = computed(() => {
-  if (!searchQuery.value) return entries.value
-  const query = searchQuery.value.toLowerCase()
-  return entries.value.filter(entry => 
-    (entry.products?.name && entry.products.name.toLowerCase().includes(query)) ||
-    (entry.products?.brand && entry.products.brand.toLowerCase().includes(query)) ||
-    (entry.products?.color && entry.products.color.toLowerCase().includes(query)) ||
-    (entry.products?.size_variation && entry.products.size_variation.toLowerCase().includes(query))
-  )
+  let result = entries.value
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    result = result.filter(entry => 
+      (entry.products?.name && entry.products.name.toLowerCase().includes(query)) ||
+      (entry.products?.brand && entry.products.brand.toLowerCase().includes(query)) ||
+      (entry.products?.color && entry.products.color.toLowerCase().includes(query)) ||
+      (entry.products?.size_variation && entry.products.size_variation.toLowerCase().includes(query)) ||
+      (entry.products?.collection && entry.products.collection.toLowerCase().includes(query))
+    )
+  }
+
+  if (filterBrand.value) {
+    const filterLower = filterBrand.value.toLowerCase()
+    result = result.filter(entry => entry.products?.brand?.toLowerCase() === filterLower)
+  }
+
+  if (filterCollection.value) {
+    const filterLower = filterCollection.value.toLowerCase()
+    result = result.filter(entry => entry.products?.collection?.toLowerCase() === filterLower)
+  }
+
+  if (filterMaxPrice.value !== null && filterMaxPrice.value !== '') {
+    result = result.filter(entry => entry.purchase_price <= filterMaxPrice.value)
+  }
+
+  return result
 })
 </script>
 
@@ -109,9 +154,9 @@ const filteredEntries = computed(() => {
       </button>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 w-full z-20 relative">
       <!-- Barra de Busca -->
-      <div class="flex-1 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3 max-w-2xl">
+      <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
         <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
           <Search class="w-5 h-5 text-brand-400" />
         </div>
@@ -119,8 +164,40 @@ const filteredEntries = computed(() => {
           v-model="searchQuery" 
           type="text" 
           placeholder="Buscar por produto, marca, cor..." 
-          class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2"
+          class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0"
         >
+      </div>
+
+      <!-- Filtros na mesma linha -->
+      <div class="flex items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-full shadow-sm border border-white shrink-0 hidden lg:flex">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Marca</span>
+          <CustomSelect 
+            v-model="filterBrand" 
+            :options="uniqueEntryBrands"
+            placeholder="Todas"
+            variant="ghost"
+          />
+        </div>
+        
+        <div class="w-px h-5 bg-slate-200"></div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Coleção</span>
+          <CustomSelect 
+            v-model="filterCollection" 
+            :options="uniqueCollections"
+            placeholder="Todas"
+            variant="ghost"
+          />
+        </div>
+
+        <div class="w-px h-5 bg-slate-200"></div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Máx (R$)</span>
+          <input v-model.number="filterMaxPrice" type="number" placeholder="Ex: 15" min="0" step="0.01" class="text-sm bg-transparent border-none focus:ring-0 outline-none text-slate-700 font-medium p-0 w-16 placeholder-slate-300">
+        </div>
       </div>
 
       <!-- Controles de Visualização -->
