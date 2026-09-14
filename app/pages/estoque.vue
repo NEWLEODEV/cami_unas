@@ -154,7 +154,7 @@ const filteredEntries = computed(() => {
       </button>
     </div>
 
-    <div class="flex items-center gap-4 w-full z-20 relative">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative">
       <!-- Barra de Busca -->
       <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
         <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
@@ -169,7 +169,7 @@ const filteredEntries = computed(() => {
       </div>
 
       <!-- Filtros na mesma linha -->
-      <div class="flex items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-full shadow-sm border border-white shrink-0 hidden lg:flex">
+      <div class="flex flex-wrap lg:flex-nowrap items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-3xl lg:rounded-full shadow-sm border border-white shrink-0">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Marca</span>
           <CustomSelect 
