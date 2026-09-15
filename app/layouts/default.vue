@@ -59,13 +59,17 @@ const handleLogout = async () => {
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden min-w-0 pb-20 md:pb-0">
       <!-- Header -->
-      <header class="h-16 md:h-20 flex items-center justify-between md:justify-end px-4 md:px-8 shrink-0 bg-white/50 md:bg-transparent backdrop-blur-md sticky top-0 z-30 md:static">
+      <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 shrink-0 bg-white/50 md:bg-transparent backdrop-blur-md sticky top-0 z-30 md:static">
         <!-- Logo Mobile -->
         <div class="md:hidden">
           <img src="/camis.png" alt="Cami Unhas" class="h-8 w-auto object-contain" />
         </div>
+
+        <div class="hidden md:block flex-1 mr-4">
+          <slot name="header-left" />
+        </div>
         
-        <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-white">
+        <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-white shrink-0">
           <span class="text-sm font-medium text-slate-600">Olá, Camila</span>
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-200 to-brand-100 flex items-center justify-center text-brand-700 font-bold border-2 border-white shadow-sm">
             C

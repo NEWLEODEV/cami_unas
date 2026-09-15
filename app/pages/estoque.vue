@@ -170,20 +170,20 @@ const filteredEntries = computed(() => {
 
   return result
 })
+
+definePageMeta({
+  layout: false
+})
 </script>
 
 <template>
-  <div class="space-y-8">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-bold text-rose-950 tracking-tight">Estoque</h1>
-        <p class="text-slate-400 text-sm mt-1 font-medium">Lista de todas as movimentações de estoque</p>
-      </div>
-      <button @click="openNewModal" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 hover:-translate-y-0.5 text-white px-6 py-3 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-md">
-        <Plus class="w-5 h-5" />
-        Registrar Entrada
-      </button>
-    </div>
+  <NuxtLayout name="default">
+    <template #header-left>
+      <p class="text-slate-600 font-medium text-lg truncate">Lista de todas as movimentações de estoque</p>
+    </template>
+
+    <div class="space-y-6">
+
 
     <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative">
       <!-- Barra de Busca -->
@@ -244,6 +244,12 @@ const filteredEntries = computed(() => {
           <List class="w-5 h-5" />
         </button>
       </div>
+
+      <!-- Registrar Entrada -->
+      <button @click="openNewModal" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-md shrink-0 text-sm font-bold h-[48px]">
+        <Plus class="w-4 h-4" />
+        Registrar Entrada
+      </button>
     </div>
 
     <!-- Lista de Entradas -->
@@ -424,4 +430,5 @@ const filteredEntries = computed(() => {
       </div>
     </div>
   </div>
+  </NuxtLayout>
 </template>
