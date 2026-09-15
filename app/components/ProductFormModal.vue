@@ -373,22 +373,22 @@ defineExpose({
         <!-- Foto do Produto -->
         <div class="flex items-center gap-4 mb-4">
           <div class="flex gap-2 shrink-0">
-            <div class="relative w-20 h-20 rounded-2xl bg-brand-50 border-2 border-dashed border-brand-200 flex items-center justify-center overflow-hidden group">
+            <div data-tooltip="Adicionar da Galeria" class="tooltip-bottom relative w-20 h-20 rounded-2xl bg-brand-50 border-2 border-dashed border-brand-200 flex items-center justify-center overflow-hidden group">
               <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
               <div v-else class="text-brand-400 flex flex-col items-center gap-1">
                 <ImagePlus class="w-6 h-6" />
               </div>
-              <input type="file" accept="image/*" @change="handleImageSelect" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" title="Adicionar da Galeria">
+              <input type="file" accept="image/*" @change="handleImageSelect" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10">
               <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <span class="text-white text-[10px] font-bold uppercase tracking-wider">Galeria</span>
               </div>
             </div>
 
-            <div class="relative w-20 h-20 rounded-2xl bg-brand-50 border-2 border-dashed border-brand-200 flex items-center justify-center overflow-hidden group">
+            <div data-tooltip="Tirar Foto" class="tooltip-bottom relative w-20 h-20 rounded-2xl bg-brand-50 border-2 border-dashed border-brand-200 flex items-center justify-center overflow-hidden group">
               <div class="text-brand-400 flex flex-col items-center gap-1">
                 <Camera class="w-6 h-6" />
               </div>
-              <input type="file" accept="image/*" capture="environment" @change="handleImageSelect" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" title="Tirar Foto">
+              <input type="file" accept="image/*" capture="environment" @change="handleImageSelect" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10">
               <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <span class="text-white text-[10px] font-bold uppercase tracking-wider">Câmera</span>
               </div>

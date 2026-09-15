@@ -1,4 +1,6 @@
 <script setup>
+import { Settings } from 'lucide-vue-next'
+
 const supabase = useSupabaseClient()
 const email = ref('')
 const password = ref('')
@@ -29,7 +31,14 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[url(https://www.transparenttextures.com/patterns/cubes.png)] bg-gradient-to-br from-brand-50 via-white to-brand-100 p-4">
+  <div class="relative min-h-screen flex items-center justify-center bg-[url(https://www.transparenttextures.com/patterns/cubes.png)] bg-gradient-to-br from-brand-50 via-white to-brand-100 p-4">
+    <!-- Ícone no canto superior direito da tela -->
+    <div class="fixed top-6 right-6 sm:top-8 sm:right-8 z-50">
+      <NuxtLink to="/admin" class="block p-2 text-slate-400 hover:text-brand-600 transition-colors tooltip-left" data-tooltip="Painel Administrativo">
+        <Settings class="w-6 h-6" />
+      </NuxtLink>
+    </div>
+
     <div class="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-hover p-10 border border-white">
       <div class="text-center mb-10">
         <div class="flex justify-center mx-auto mb-8">

@@ -233,14 +233,14 @@ const filteredEntries = computed(() => {
 
       <!-- Controles de Visualização -->
       <div class="bg-white/80 backdrop-blur-md p-1.5 rounded-full shadow-sm border border-white flex items-center gap-1 shrink-0 hidden sm:flex">
-        <button @click="viewMode = 'large'" :class="viewMode === 'large' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all" title="Ícones grandes">
+        <button @click="viewMode = 'large'" :class="viewMode === 'large' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all tooltip-bottom" data-tooltip="Ícones grandes">
           <LayoutGrid class="w-5 h-5" />
         </button>
-        <button @click="viewMode = 'medium'" :class="viewMode === 'medium' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all" title="Ícones médios">
+        <button @click="viewMode = 'medium'" :class="viewMode === 'medium' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all tooltip-bottom" data-tooltip="Ícones médios">
           <Grid class="w-5 h-5" />
         </button>
         <div class="w-px h-6 bg-slate-200 mx-1"></div>
-        <button @click="viewMode = 'details'" :class="viewMode === 'details' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all" title="Detalhes">
+        <button @click="viewMode = 'details'" :class="viewMode === 'details' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all tooltip-bottom" data-tooltip="Detalhes">
           <List class="w-5 h-5" />
         </button>
       </div>
@@ -280,17 +280,17 @@ const filteredEntries = computed(() => {
                     <p class="font-semibold text-rose-950 group-hover:text-brand-600 transition-colors">{{ entry.products?.name || 'Produto Excluído' }}</p>
                     <div v-if="entry.products" class="flex items-center gap-1">
                       <div class="flex items-end gap-0.5 group/hearts mr-2">
-                        <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Gostei">
+                        <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Gostei">
                           <Heart class="w-3 h-3" :class="{'fill-current': entry.products.favorite_level >= 1}" />
                         </button>
-                        <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Adorei">
+                        <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Adorei">
                           <Heart class="w-3.5 h-3.5" :class="{'fill-current': entry.products.favorite_level >= 2}" />
                         </button>
-                        <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Super Amei">
+                        <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Super Amei">
                           <Heart class="w-4 h-4" :class="{'fill-current': entry.products.favorite_level >= 3}" />
                         </button>
                       </div>
-                      <button @click.stop="toggleUsed(entry.products)" class="p-1 rounded-full transition-colors" :class="entry.products.is_used ? 'text-emerald-500' : 'text-slate-300 hover:text-emerald-400'" title="Testado/Usado">
+                      <button @click.stop="toggleUsed(entry.products)" class="p-1 rounded-full transition-colors" :class="entry.products.is_used ? 'text-emerald-500' : 'text-slate-300 hover:text-emerald-400'" data-tooltip="Testado/Usado">
                         <CheckCircle2 class="w-4 h-4" />
                       </button>
                     </div>
@@ -321,10 +321,10 @@ const filteredEntries = computed(() => {
                 </td>
                 <td class="py-5 px-8 text-right">
                   <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button @click="openEditModal(entry)" class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors" title="Editar">
+                    <button @click="openEditModal(entry)" class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
                       <Pencil class="w-4 h-4" />
                     </button>
-                    <button @click="deleteEntry(entry.id)" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors" title="Excluir">
+                    <button @click="deleteEntry(entry.id)" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors tooltip-left" data-tooltip="Excluir">
                       <Trash2 class="w-4 h-4" />
                     </button>
                   </div>
@@ -339,10 +339,10 @@ const filteredEntries = computed(() => {
           <div v-for="entry in filteredEntries" :key="entry.id" class="bg-white/80 backdrop-blur-md border border-white rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden">
             <!-- Ações -->
             <div class="absolute top-4 right-4 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-brand-50">
-              <button @click="openEditModal(entry)" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors" title="Editar">
+              <button @click="openEditModal(entry)" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
                 <Pencil class="w-3.5 h-3.5" />
               </button>
-              <button @click="deleteEntry(entry.id)" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors" title="Excluir">
+              <button @click="deleteEntry(entry.id)" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors tooltip-left" data-tooltip="Excluir">
                 <Trash2 class="w-3.5 h-3.5" />
               </button>
             </div>
@@ -351,19 +351,19 @@ const filteredEntries = computed(() => {
             <div class="absolute top-4 left-4 flex flex-col items-center gap-1.5 z-10" v-if="entry.products">
               <!-- Hearts Stack -->
               <div class="flex flex-col items-center gap-0.5 group/hearts bg-white/60 hover:bg-white/90 backdrop-blur-sm rounded-full p-1 pb-1.5 transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-white/50 hover:border-brand-50" :class="{'opacity-0 group-hover:opacity-100': !entry.products.favorite_level}">
-                <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 rounded-full transition-all" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Super Amei">
+                <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Super Amei">
                   <Heart class="w-5 h-5" :class="{'fill-current': entry.products.favorite_level >= 3}" />
                 </button>
-                <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 rounded-full transition-all" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Adorei">
+                <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Adorei">
                   <Heart class="w-4 h-4" :class="{'fill-current': entry.products.favorite_level >= 2}" />
                 </button>
-                <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 rounded-full transition-all" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Gostei">
+                <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Gostei">
                   <Heart class="w-3.5 h-3.5" :class="{'fill-current': entry.products.favorite_level >= 1}" />
                 </button>
               </div>
 
               <!-- Usado/Testado Button -->
-              <button @click.stop="toggleUsed(entry.products)" class="p-1.5 rounded-full transition-all shadow-sm border" :class="entry.products.is_used ? 'text-emerald-500 bg-white border-emerald-100 opacity-100' : 'text-slate-300 bg-white/80 border-transparent opacity-0 group-hover:opacity-100 hover:text-emerald-400'" title="Usado / Testado">
+              <button @click.stop="toggleUsed(entry.products)" class="p-1.5 rounded-full transition-all shadow-sm border tooltip-right" :class="entry.products.is_used ? 'text-emerald-500 bg-white border-emerald-100 opacity-100' : 'text-slate-300 bg-white/80 border-transparent opacity-0 group-hover:opacity-100 hover:text-emerald-400'" data-tooltip="Usado / Testado">
                 <CheckCircle2 class="w-4 h-4" />
               </button>
             </div>
