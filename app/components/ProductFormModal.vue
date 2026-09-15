@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { X, Package, ImagePlus, Camera, ScanLine } from 'lucide-vue-next'
+import { X, Package, ImagePlus, Camera } from 'lucide-vue-next'
 import imageCompression from 'browser-image-compression'
 
 const supabase = useSupabaseClient()
@@ -24,51 +24,7 @@ const editingId = ref(null)
 const selectedImageFile = ref(null)
 const imagePreview = ref(null)
 const imageUrlInput = ref('')
-const isScannerOpen = ref(false)
 
-const handleScan = async (code) => {
-  isScannerOpen.value = false
-  if (!code) return
-  
-  // Buscar produto no banco pelo código
-  const { data, error } = await supabase.from('products').select('*').eq('barcode', code).maybeSingle()
-  
-  if (data && !error) {
-    // Preencher automaticamente
-    newProduct.value.barcode = code
-    newProduct.value.category = data.category
-    
-    if (predefinedBrands.includes(data.brand) || baseBrands.includes(data.brand)) {
-      selectedBrand.value = data.brand
-      customBrand.value = ''
-    } else {
-      selectedBrand.value = 'Outra'
-      customBrand.value = data.brand
-    }
-    
-    const extractedType = getProductType(data.name) !== 'Indefinido' ? getProductType(data.name) : 'Cremoso'
-    if (availableTypes.value.includes(extractedType)) {
-      newProduct.value.type = extractedType
-      customType.value = ''
-    } else {
-      newProduct.value.type = 'Outros'
-      customType.value = extractedType
-    }
-
-    newProduct.value.color = data.color
-    newProduct.value.collection = data.collection || ''
-    newProduct.value.unit_measure = data.unit_measure
-    newProduct.value.size_variation = data.size_variation || ''
-    imageUrlInput.value = data.image_url || ''
-    imagePreview.value = data.image_url || null
-    
-    showAlert('Produto Encontrado!', `Os dados do produto foram preenchidos automaticamente pelo seu banco de dados.`)
-  } else {
-    // Produto não existe
-    newProduct.value.barcode = code
-    showAlert('Novo Código', `Código ${code} lido com sucesso. Continue preenchendo os dados para vinculá-lo a este produto.`)
-  }
-}
 
 const handleImageSelect = (event) => {
   const file = event.target.files[0]
@@ -114,8 +70,7 @@ const newProduct = ref({
   initial_price: 0.00,
   initial_purchase_date: new Date().toISOString().split('T')[0],
   initial_expiration_date: '',
-  inventory_id: null,
-  barcode: ''
+  inventory_id: null
 })
 
 const baseBrands = [
@@ -180,7 +135,7 @@ const resetForm = () => {
   customBrand.value = ''
   newProduct.value = {
     type: 'Cremoso', category: 'Esmalte', brand: '', color: '', collection: '', unit_measure: 'Mililitro', size_variation: '',
-    initial_quantity: 1, initial_price: 0.00, initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '', image_url: null, inventory_id: null, barcode: ''
+    initial_quantity: 1, initial_price: 0.00, initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '', image_url: null, inventory_id: null
   }
   selectedImageFile.value = null
   imageUrlInput.value = ''
@@ -241,8 +196,7 @@ const openEditModal = async (productId, inventoryEntryId = null) => {
     size_variation: product.size_variation || '',
     initial_quantity: 1, initial_price: 0.00, initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '',
     image_url: product.image_url || null,
-    inventory_id: null,
-    barcode: product.barcode || ''
+    inventory_id: null
   }
   selectedImageFile.value = null
   imageUrlInput.value = product.image_url || ''
@@ -294,8 +248,7 @@ const saveProduct = async () => {
     color: newProduct.value.color,
     collection: newProduct.value.collection,
     unit_measure: newProduct.value.unit_measure,
-    size_variation: newProduct.value.size_variation,
-    barcode: newProduct.value.barcode || null
+    size_variation: newProduct.value.size_variation
   }
 
   let finalImageUrl = isEditing.value ? newProduct.value.image_url : null;
@@ -409,10 +362,6 @@ defineExpose({
       <div class="p-4 border-b border-brand-50 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-sm z-10">
         <h2 class="text-xl font-bold text-rose-950">{{ isEditing ? 'Editar Produto / Estoque' : 'Cadastrar Novo Produto' }}</h2>
         <div class="flex items-center gap-2">
-          <button @click.prevent="isScannerOpen = true" type="button" class="flex items-center gap-1.5 px-3 py-1.5 bg-brand-500 text-white rounded-full text-sm font-semibold hover:bg-brand-600 transition-colors shadow-sm">
-            <ScanLine class="w-4 h-4" />
-            <span class="hidden sm:inline">Escanear</span>
-          </button>
           <button @click="isModalOpen = false" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-colors">
             <X class="w-5 h-5" />
           </button>
@@ -460,26 +409,6 @@ defineExpose({
           </div>
         </div>
 
-        <!-- Código de Barras Manual -->
-        <div class="bg-brand-50/50 p-3 rounded-xl border border-brand-100 mb-4">
-          <label class="block text-xs font-bold text-brand-900 mb-1 flex items-center gap-1.5">
-            <ScanLine class="w-3.5 h-3.5" />
-            Código de Barras
-          </label>
-          <div class="flex gap-2">
-            <input 
-              v-model="newProduct.barcode" 
-              type="text" 
-              placeholder="Digite o código ou use a câmera no topo..." 
-              class="flex-1 px-3 py-1.5 text-sm rounded-lg border border-brand-200 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors bg-white"
-              @keydown.enter.prevent="handleScan(newProduct.barcode)"
-            >
-            <button @click.prevent="handleScan(newProduct.barcode)" type="button" class="px-3 py-1.5 bg-brand-500 text-white rounded-lg text-sm font-semibold hover:bg-brand-600 transition-colors shadow-sm">
-              Buscar
-            </button>
-          </div>
-          <p class="text-[10px] text-brand-600/70 mt-1">Digite o número e clique em Buscar para auto-preencher os dados.</p>
-        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <!-- Categoria e Marca -->
@@ -602,5 +531,4 @@ defineExpose({
       </form>
     </div>
   </div>
-  <BarcodeScanner v-if="isScannerOpen" @scanned="handleScan" @close="isScannerOpen = false" />
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2, Grid, LayoutGrid, List } from 'lucide-vue-next'
+import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2, Grid, LayoutGrid, List, Heart, CheckCircle2 } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const { showConfirm, showAlert } = useDialog()
@@ -27,12 +27,15 @@ const fetchEntries = async () => {
     .select(`
       *,
       products (
+        id,
         name,
         brand,
         color,
         collection,
         size_variation,
-        image_url
+        image_url,
+        favorite_level,
+        is_used
       )
     `)
     .order('created_at', { ascending: false })
@@ -65,6 +68,34 @@ const deleteEntry = async (id) => {
     fetchEntries()
   } else {
     await showAlert('Erro ao excluir entrada: ' + error.message, 'Erro')
+  }
+}
+
+const setFavoriteLevel = async (product, level) => {
+  if (!product) return;
+  
+  // Se clicar no mesmo nível, zera a avaliação
+  const newValue = product.favorite_level === level ? 0 : level;
+  const oldValue = product.favorite_level;
+  
+  product.favorite_level = newValue;
+  
+  const { error } = await supabase.from('products').update({ favorite_level: newValue }).eq('id', product.id);
+  if (error) {
+    product.favorite_level = oldValue;
+    await showAlert('Erro', 'Não foi possível atualizar o favorito: ' + error.message);
+  }
+}
+
+const toggleUsed = async (product) => {
+  if (!product) return;
+  const newValue = !product.is_used;
+  product.is_used = newValue;
+  
+  const { error } = await supabase.from('products').update({ is_used: newValue }).eq('id', product.id);
+  if (error) {
+    product.is_used = !newValue;
+    await showAlert('Erro', 'Não foi possível atualizar o status de uso: ' + error.message);
   }
 }
 
@@ -245,7 +276,25 @@ const filteredEntries = computed(() => {
             <tbody>
               <tr v-for="entry in filteredEntries" :key="entry.id" class="border-b border-brand-50/30 hover:bg-white transition-colors group">
                 <td class="py-5 px-8">
-                  <p class="font-semibold text-rose-950 group-hover:text-brand-600 transition-colors">{{ entry.products?.name || 'Produto Excluído' }}</p>
+                  <div class="flex items-center gap-2 mb-1">
+                    <p class="font-semibold text-rose-950 group-hover:text-brand-600 transition-colors">{{ entry.products?.name || 'Produto Excluído' }}</p>
+                    <div v-if="entry.products" class="flex items-center gap-1">
+                      <div class="flex items-end gap-0.5 group/hearts mr-2">
+                        <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Gostei">
+                          <Heart class="w-3 h-3" :class="{'fill-current': entry.products.favorite_level >= 1}" />
+                        </button>
+                        <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Adorei">
+                          <Heart class="w-3.5 h-3.5" :class="{'fill-current': entry.products.favorite_level >= 2}" />
+                        </button>
+                        <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Super Amei">
+                          <Heart class="w-4 h-4" :class="{'fill-current': entry.products.favorite_level >= 3}" />
+                        </button>
+                      </div>
+                      <button @click.stop="toggleUsed(entry.products)" class="p-1 rounded-full transition-colors" :class="entry.products.is_used ? 'text-emerald-500' : 'text-slate-300 hover:text-emerald-400'" title="Testado/Usado">
+                        <CheckCircle2 class="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                   <p class="text-sm text-slate-400 mt-0.5" v-if="entry.products">
                     {{ entry.products.brand }} {{ entry.products.color ? `• ${entry.products.color}` : '' }} 
                   </p>
@@ -295,6 +344,27 @@ const filteredEntries = computed(() => {
               </button>
               <button @click="deleteEntry(entry.id)" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors" title="Excluir">
                 <Trash2 class="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <!-- Indicadores (Favorito e Usado) -->
+            <div class="absolute top-4 left-4 flex flex-col items-center gap-1.5 z-10" v-if="entry.products">
+              <!-- Hearts Stack -->
+              <div class="flex flex-col items-center gap-0.5 group/hearts bg-white/60 hover:bg-white/90 backdrop-blur-sm rounded-full p-1 pb-1.5 transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-white/50 hover:border-brand-50" :class="{'opacity-0 group-hover:opacity-100': !entry.products.favorite_level}">
+                <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 rounded-full transition-all" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Super Amei">
+                  <Heart class="w-5 h-5" :class="{'fill-current': entry.products.favorite_level >= 3}" />
+                </button>
+                <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 rounded-full transition-all" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Adorei">
+                  <Heart class="w-4 h-4" :class="{'fill-current': entry.products.favorite_level >= 2}" />
+                </button>
+                <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 rounded-full transition-all" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" title="Gostei">
+                  <Heart class="w-3.5 h-3.5" :class="{'fill-current': entry.products.favorite_level >= 1}" />
+                </button>
+              </div>
+
+              <!-- Usado/Testado Button -->
+              <button @click.stop="toggleUsed(entry.products)" class="p-1.5 rounded-full transition-all shadow-sm border" :class="entry.products.is_used ? 'text-emerald-500 bg-white border-emerald-100 opacity-100' : 'text-slate-300 bg-white/80 border-transparent opacity-0 group-hover:opacity-100 hover:text-emerald-400'" title="Usado / Testado">
+                <CheckCircle2 class="w-4 h-4" />
               </button>
             </div>
 

@@ -34,18 +34,18 @@ const handleLogout = async () => {
       </nav>
       
       <div class="p-6 space-y-2">
-        <a href="#" target="_blank" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
+        <a href="https://www.tiktok.com/@nailsbycamis" target="_blank" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
           <PlaySquare class="w-5 h-5" />
           TikTok
         </a>
-        <a href="#" target="_blank" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
+        <a href="https://www.instagram.com/unhasbycamis/" target="_blank" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
           <Instagram class="w-5 h-5" />
           Instagram
         </a>
-        <a href="#" target="_blank" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
+        <NuxtLink to="/contatos" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Phone class="w-5 h-5" />
           Contatos
-        </a>
+        </NuxtLink>
 
         <div class="pt-2 mt-2 border-t border-brand-50">
           <button @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors font-medium">
