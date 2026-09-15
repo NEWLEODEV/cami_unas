@@ -1,7 +1,51 @@
 <script setup>
-import { LayoutDashboard, Package, Droplet, LogOut, Instagram, Phone, PlaySquare, ShoppingBag } from 'lucide-vue-next'
+import { LayoutDashboard, Package, Droplet, LogOut, Instagram, Phone, PlaySquare, ShoppingBag, Settings } from 'lucide-vue-next'
+import { ref, onMounted, computed } from 'vue'
 
 const supabase = useSupabaseClient()
+const user = useSupabaseUser()
+const userName = ref('')
+const isAdmin = ref(false)
+
+onMounted(async () => {
+  if (user.value) {
+    // Tenta pegar o nome do perfil no banco
+    const { data } = await supabase
+      .from('profiles')
+      .select('name, is_admin')
+      .eq('id', user.value.id)
+      .single()
+      
+    let fullName = data?.name || user.value.user_metadata?.name
+    
+    const userEmail = (user.value.email || '').trim().toLowerCase()
+    const isOwner = userEmail === 'camilatavares.arq@gmail.com'
+    
+    if (data) {
+      isAdmin.value = data.is_admin === true || isOwner
+    } else {
+      isAdmin.value = isOwner
+    }
+    
+    console.log('--- DEBUG DO ADMIN ---')
+    console.log('Email detectado:', userEmail)
+    console.log('Data do banco:', data)
+    console.log('isOwner (hardcode):', isOwner)
+    console.log('isAdmin final:', isAdmin.value)
+    
+    if (fullName) {
+      // Pega apenas o primeiro nome
+      userName.value = fullName.split(' ')[0]
+    } else {
+      // Fallback genérico caso o usuário não tenha cadastrado um nome
+      userName.value = 'Usuário'
+    }
+  }
+})
+
+const userInitial = computed(() => {
+  return userName.value ? userName.value.charAt(0).toUpperCase() : 'U'
+})
 
 const handleLogout = async () => {
   await supabase.auth.signOut()
@@ -29,6 +73,10 @@ const handleLogout = async () => {
         <NuxtLink to="/shopping" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <ShoppingBag class="w-5 h-5" />
           Shopping
+        </NuxtLink>
+        <NuxtLink v-if="isAdmin" to="/admin" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl text-brand-600 bg-brand-50 hover:bg-brand-100 hover:-translate-y-0.5 transition-all duration-300 font-bold border border-brand-200 mt-4">
+          <Settings class="w-5 h-5" />
+          Painel Admin
         </NuxtLink>
 
       </nav>
@@ -70,9 +118,10 @@ const handleLogout = async () => {
         </div>
         
         <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-white shrink-0">
-          <span class="text-sm font-medium text-slate-600">Olá, Camila</span>
+          <div v-if="isAdmin" class="bg-brand-100 text-brand-700 text-xs px-2 py-1 rounded-full font-bold">ADMIN</div>
+          <span class="text-sm font-medium text-slate-600">Olá, {{ userName || 'Carregando...' }}</span>
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-200 to-brand-100 flex items-center justify-center text-brand-700 font-bold border-2 border-white shadow-sm">
-            C
+            {{ userInitial }}
           </div>
         </div>
       </header>
