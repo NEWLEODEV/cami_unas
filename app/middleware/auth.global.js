@@ -10,6 +10,6 @@ export default defineNuxtRouteMiddleware((to, _from) => {
   // Se o usuário já estiver logado e tentar acessar a página de login,
   // redireciona para a página principal (dashboard).
   if (user.value && to.path === '/login') {
-    return navigateTo('/')
+    return navigateTo('/sobre')
   }
 })

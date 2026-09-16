@@ -51,7 +51,7 @@ const handleAuth = async () => {
     if (error) {
       errorMsg.value = 'Falha no login. Verifique suas credenciais.'
     } else {
-      navigateTo('/')
+      navigateTo('/sobre')
     }
   }
   
@@ -66,7 +66,7 @@ const handleOAuth = async (provider) => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: window.location.origin + '/'
+      redirectTo: window.location.origin + '/sobre'
     }
   })
 

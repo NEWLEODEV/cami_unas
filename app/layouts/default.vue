@@ -68,7 +68,7 @@ const handleLogout = async () => {
         </NuxtLink>
          <NuxtLink to="/estoque" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Droplet class="w-4 h-4" />
-          Meus Esmaltes
+          Minha Coleção
         </NuxtLink>
         <NuxtLink to="/shopping" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <ShoppingBag class="w-4 h-4" />
