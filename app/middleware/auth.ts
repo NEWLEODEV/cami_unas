@@ -8,10 +8,20 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   // Proteção rígida para rotas administrativas
   if (to.path.startsWith('/admin')) {
+    // Hardcode infalível para a conta dona do sistema.
+    // Fazemos isso ANTES da query para evitar erro no banco caso o id esteja undefined (comum em mocks de dev).
+    if (user.value.email === 'camilatavares.arq@gmail.com') {
+      return
+    }
+
+    // Se o usuário não tiver ID válido e não for o admin principal, expulsa
+    if (!user.value.id) {
+      return navigateTo('/')
+    }
+
     const supabase = useSupabaseClient()
-    
+
     // Consulta a tabela de perfis para saber se o usuário é administrador
-    // Usamos 'as any' para evitar o erro do TypeScript (type 'never') já que não geramos os tipos do Supabase
     const { data, error } = await supabase
       .from('profiles')
       .select('is_admin')
@@ -24,11 +34,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       profileData: data, 
       profileError: error 
     })
-
-    // Hardcode infallível para a conta dona do sistema caso a tabela demore a carregar
-    if (user.value.email === 'camilatavares.arq@gmail.com') {
-      return
-    }
 
     // Se não for administrador (ou se der erro/não existir), expulsa para a página principal
     if (!data || data.is_admin !== true) {
