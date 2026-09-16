@@ -1,11 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { ShoppingBag, ExternalLink, Sparkles, Filter, Tag } from 'lucide-vue-next'
+import { ShoppingBag, ExternalLink, Sparkles, Filter, Tag, Search } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const categories = ref([])
 const loading = ref(true)
 const selectedCategoryId = ref('')
+const searchQuery = ref('')
 
 const fetchShoppingData = async () => {
   loading.value = true
@@ -44,11 +45,30 @@ onMounted(() => {
 })
 
 const filteredProducts = computed(() => {
+  let products = []
   if (!selectedCategoryId.value) {
-    return categories.value.flatMap(c => c.products)
+    products = categories.value.flatMap(c => c.products)
+  } else {
+    const category = categories.value.find(c => c.id === selectedCategoryId.value)
+    products = category ? category.products : []
   }
-  const category = categories.value.find(c => c.id === selectedCategoryId.value)
-  return category ? category.products : []
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    products = products.filter(p => 
+      (p.title && p.title.toLowerCase().includes(query)) || 
+      (p.description && p.description.toLowerCase().includes(query))
+    )
+  }
+
+  return products
+})
+
+const categoryOptions = computed(() => {
+  return categories.value.map(cat => ({
+    label: cat.name,
+    value: cat.id
+  }))
 })
 
 definePageMeta({
@@ -80,26 +100,35 @@ definePageMeta({
     </div>
     
     <!-- Vitrine (Categories and Products) -->
-    <div v-else class="space-y-10">
+    <div v-else class="space-y-8">
       
-      <!-- Filter Chips -->
-      <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        <button 
-          @click="selectedCategoryId = ''" 
-          :class="selectedCategoryId === '' ? 'bg-brand-600 text-white shadow-md border-brand-600' : 'bg-white/80 text-slate-600 hover:bg-white border-white shadow-sm hover:shadow-hover'"
-          class="px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all border"
-        >
-          Todas as Categorias
-        </button>
-        <button 
-          v-for="cat in categories" 
-          :key="cat.id"
-          @click="selectedCategoryId = cat.id"
-          :class="selectedCategoryId === cat.id ? 'bg-brand-600 text-white shadow-md border-brand-600' : 'bg-white/80 text-slate-600 hover:bg-white border-white shadow-sm hover:shadow-hover'"
-          class="px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all border"
-        >
-          {{ cat.name }}
-        </button>
+      <!-- Filters and Search -->
+      <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative">
+        <!-- Barra de Busca -->
+        <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
+          <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
+            <Search class="w-5 h-5 text-brand-400" />
+          </div>
+          <input 
+            v-model="searchQuery" 
+            type="text" 
+            placeholder="Buscar recomendações..." 
+            class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0"
+          >
+        </div>
+
+        <!-- Categoria Dropdown -->
+        <div class="flex items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-full shadow-sm border border-white shrink-0">
+          <div class="flex items-center gap-2 shrink-0 min-w-[200px]">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Categoria</span>
+            <CustomSelect 
+              v-model="selectedCategoryId" 
+              :options="categoryOptions"
+              placeholder="Todas as Categorias"
+              variant="ghost"
+            />
+          </div>
+        </div>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3 sm:gap-4">

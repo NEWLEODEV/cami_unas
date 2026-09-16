@@ -54,15 +54,15 @@ definePageMeta({
           </div>
 
           <!-- Vertical Tabs -->
-          <div class="flex flex-col gap-2 overflow-y-auto pr-2 pb-8">
+          <div class="flex flex-col gap-2 pb-8 relative z-10">
             <button 
               v-for="tab in tabs" 
               :key="tab.id"
               @click="activeTabId = tab.id"
-              class="w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 border"
+              class="w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 relative focus:outline-none"
               :class="activeTabId === tab.id 
-                ? 'bg-brand-50 text-brand-600 shadow-sm border-brand-100 font-bold' 
-                : 'bg-transparent text-slate-500 border-transparent hover:bg-white/60 hover:text-slate-700 font-medium'"
+                ? 'bg-white/90 backdrop-blur-md text-brand-600 font-bold lg:rounded-r-none lg:w-[calc(100%+3rem+1px)]' 
+                : 'bg-transparent text-slate-500 hover:bg-white/60 hover:text-slate-700 font-medium'"
             >
               {{ tab.title }}
             </button>
@@ -73,7 +73,7 @@ definePageMeta({
         </div>
 
         <!-- Coluna da Direita (Conteúdo) -->
-        <div class="lg:col-span-8 xl:col-span-8 flex flex-col h-full min-h-[400px]">
+        <div class="lg:col-span-8 xl:col-span-8 flex flex-col h-full min-h-[400px] relative z-0">
           <div class="flex-1 bg-white/90 backdrop-blur-md shadow-sm rounded-3xl p-8 lg:p-14 border border-white flex flex-col justify-center">
             
             <Transition

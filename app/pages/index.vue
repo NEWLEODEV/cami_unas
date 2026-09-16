@@ -237,15 +237,20 @@ const lineChartOptions = {
     x: { grid: { display: false }, border: { display: false } }
   }
 }
+
+definePageMeta({
+  layout: false
+})
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto">
-    <div class="flex items-center justify-between">
-      <h1 class="text-3xl font-bold text-rose-950 tracking-tight">Dashboard</h1>
-    </div>
+  <NuxtLayout name="default">
+    <template #header-left>
+      <p class="text-slate-600 font-medium text-lg truncate">Dashboard</p>
+    </template>
 
-    <!-- Overview Cards -->
+    <div class="space-y-6 max-w-7xl mx-auto py-6 md:py-8 px-4 md:px-8 h-full">
+      <!-- Overview Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-soft flex items-center gap-4 border border-white hover:-translate-y-1 transition-transform duration-300">
         <div class="w-12 h-12 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-500 shadow-sm border border-brand-100/50">
@@ -262,7 +267,7 @@ const lineChartOptions = {
           <TrendingUp class="w-6 h-6" />
         </div>
         <div>
-          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Valor Estimado</p>
+          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Valor Estimado da minha Coleção</p>
           <p class="text-2xl font-bold text-rose-950 mt-0.5">R$ {{ totalValue.toFixed(2) }}</p>
         </div>
       </div>
@@ -293,26 +298,26 @@ const lineChartOptions = {
       
       <!-- Gostei -->
       <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white overflow-hidden">
-        <div class="p-5 border-b border-surface-100 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-50/50 to-transparent">
+        <div class="p-5 border-b border-surface-100 flex items-center justify-center gap-2 bg-gradient-to-r from-rose-50/50 to-transparent">
           <div class="flex gap-0.5">
             <Heart class="w-5 h-5 text-rose-500 fill-rose-500" />
             <Heart class="w-5 h-5 text-rose-200" />
             <Heart class="w-5 h-5 text-rose-200" />
           </div>
-          <h2 class="font-bold text-blue-950 uppercase tracking-wide">Gostei</h2>
+          <h2 class="font-bold text-rose-950 uppercase tracking-wide">Gostei</h2>
         </div>
         <div class="p-2">
           <div v-for="product in gosteiItems" :key="product.id" class="flex items-center gap-3 p-3 hover:bg-white rounded-2xl transition-colors">
             <div class="w-10 h-10 bg-surface-50 rounded-full overflow-hidden shrink-0 border border-surface-100 flex items-center justify-center text-slate-300">
               <img v-if="product.image_url" :src="product.image_url" class="w-full h-full object-cover">
-              <Heart v-else class="w-4 h-4 text-blue-300" />
+              <Heart v-else class="w-4 h-4 text-rose-300" />
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-bold text-blue-950 truncate">{{ product.name }}</p>
+              <p class="text-sm font-bold text-rose-950 truncate">{{ product.name }}</p>
               <div class="flex items-center gap-2 mt-0.5">
                 <p class="text-xs text-slate-400 truncate">{{ product.brand }}</p>
                 <div class="flex items-end gap-0.5">
-                  <Heart class="w-3 h-3 text-blue-400 fill-blue-400" />
+                  <Heart class="w-3 h-3 text-rose-500 fill-rose-500" />
                 </div>
               </div>
             </div>
@@ -325,27 +330,27 @@ const lineChartOptions = {
 
       <!-- Adorei -->
       <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white overflow-hidden">
-        <div class="p-5 border-b border-surface-100 flex items-center justify-center gap-2 bg-gradient-to-r from-purple-50/50 to-transparent">
+        <div class="p-5 border-b border-surface-100 flex items-center justify-center gap-2 bg-gradient-to-r from-rose-50/50 to-transparent">
           <div class="flex gap-0.5">
             <Heart class="w-5 h-5 text-rose-500 fill-rose-500" />
             <Heart class="w-5 h-5 text-rose-500 fill-rose-500" />
             <Heart class="w-5 h-5 text-rose-200" />
           </div>
-          <h2 class="font-bold text-purple-950 uppercase tracking-wide">Adorei</h2>
+          <h2 class="font-bold text-rose-950 uppercase tracking-wide">Adorei</h2>
         </div>
         <div class="p-2">
           <div v-for="product in ameiItems" :key="product.id" class="flex items-center gap-3 p-3 hover:bg-white rounded-2xl transition-colors">
             <div class="w-10 h-10 bg-surface-50 rounded-full overflow-hidden shrink-0 border border-surface-100 flex items-center justify-center text-slate-300">
               <img v-if="product.image_url" :src="product.image_url" class="w-full h-full object-cover">
-              <Heart v-else class="w-4 h-4 text-purple-300" />
+              <Heart v-else class="w-4 h-4 text-rose-300" />
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-bold text-purple-950 truncate">{{ product.name }}</p>
+              <p class="text-sm font-bold text-rose-950 truncate">{{ product.name }}</p>
               <div class="flex items-center gap-2 mt-0.5">
                 <p class="text-xs text-slate-400 truncate">{{ product.brand }}</p>
                 <div class="flex items-end gap-0.5">
-                  <Heart class="w-3 h-3 text-purple-400 fill-purple-400" />
-                  <Heart class="w-3 h-3 text-purple-400 fill-purple-400" />
+                  <Heart class="w-3 h-3 text-rose-500 fill-rose-500" />
+                  <Heart class="w-3 h-3 text-rose-500 fill-rose-500" />
                 </div>
               </div>
             </div>
@@ -421,23 +426,24 @@ const lineChartOptions = {
             <div v-else class="h-48 flex items-center justify-center text-slate-400 text-sm">Dados insuficientes.</div>
           </div>
 
-          <!-- Finishes Progress Bars -->
-          <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6">
-            <h2 class="text-lg font-bold text-rose-950 mb-4 flex items-center gap-2">
-              <Star class="w-5 h-5 text-brand-400" />
-              Tipos de Acabamento
-            </h2>
-            <div class="space-y-4">
-              <div v-for="finish in finishData" :key="finish.name" class="relative">
-                <div class="flex justify-between text-sm mb-1">
-                  <span class="font-medium text-slate-700">{{ finish.name }}</span>
-                  <span class="text-brand-600 font-bold">{{ finish.percentage }}%</span>
+          <!-- Últimas Entradas -->
+          <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white overflow-hidden">
+            <div class="p-5 border-b border-surface-100 flex items-center gap-2 bg-gradient-to-r from-brand-50/50 to-transparent">
+              <Clock class="w-5 h-5 text-brand-500" />
+              <h2 class="font-bold text-rose-950">Últimas Entradas</h2>
+            </div>
+            <div class="p-2">
+              <div v-for="entry in recentEntries" :key="entry.id" class="flex items-center gap-3 p-3 hover:bg-white rounded-2xl transition-colors">
+                <div class="w-12 h-12 bg-surface-50 rounded-xl overflow-hidden shrink-0 border border-surface-100 flex items-center justify-center text-slate-300">
+                  <img v-if="entry.products?.image_url" :src="entry.products.image_url" class="w-full h-full object-cover">
+                  <Package v-else class="w-6 h-6" />
                 </div>
-                <div class="w-full bg-surface-100 rounded-full h-2">
-                  <div class="bg-gradient-to-r from-brand-300 to-brand-500 h-2 rounded-full" :style="{ width: finish.percentage + '%' }"></div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-bold text-rose-950 truncate">{{ entry.products?.name }}</p>
+                  <p class="text-xs text-slate-400 truncate">{{ entry.products?.brand }} • {{ entry.quantity }} un</p>
                 </div>
               </div>
-              <div v-if="finishData.length === 0" class="text-slate-400 text-sm text-center py-4">Nenhum acabamento detectado.</div>
+              <div v-if="recentEntries.length === 0" class="p-4 text-center text-sm text-slate-400">Nenhuma entrada recente.</div>
             </div>
           </div>
         </div>
@@ -446,24 +452,27 @@ const lineChartOptions = {
       <!-- Coluna 2: Entradas, Top Marcas, Favoritos -->
       <div class="space-y-6">
         
-        <!-- Últimas Entradas -->
-        <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white overflow-hidden">
-          <div class="p-5 border-b border-surface-100 flex items-center gap-2 bg-gradient-to-r from-brand-50/50 to-transparent">
-            <Clock class="w-5 h-5 text-brand-500" />
-            <h2 class="font-bold text-rose-950">Últimas Entradas</h2>
-          </div>
-          <div class="p-2">
-            <div v-for="entry in recentEntries" :key="entry.id" class="flex items-center gap-3 p-3 hover:bg-white rounded-2xl transition-colors">
-              <div class="w-12 h-12 bg-surface-50 rounded-xl overflow-hidden shrink-0 border border-surface-100 flex items-center justify-center text-slate-300">
-                <img v-if="entry.products?.image_url" :src="entry.products.image_url" class="w-full h-full object-cover">
-                <Package v-else class="w-6 h-6" />
+        <!-- Validade Próxima -->
+        <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6">
+          <h2 class="text-lg font-bold text-rose-950 mb-4 flex items-center gap-2">
+            <AlertTriangle class="w-5 h-5 text-amber-500" />
+            Alerta de Validade Próxima
+          </h2>
+          <div class="space-y-3 overflow-y-auto pr-1" style="max-height: 180px;">
+            <div v-for="item in expiries" :key="item.id" class="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 border border-amber-100/50">
+              <div class="min-w-0 flex-1 mr-3">
+                <p class="text-sm font-bold text-rose-950 truncate">{{ item.name }}</p>
+                <p class="text-xs font-medium text-amber-600 mt-0.5">Ref: {{ item.expiration }}</p>
               </div>
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-bold text-rose-950 truncate">{{ entry.products?.name }}</p>
-                <p class="text-xs text-slate-400 truncate">{{ entry.products?.brand }} • {{ entry.quantity }} un</p>
+              <div class="text-right shrink-0 bg-white/60 px-2 py-1 rounded-lg">
+                <p class="text-[11px] font-bold uppercase tracking-wider" :class="item.daysLeft <= 0 ? 'text-red-500' : 'text-amber-600'">
+                  {{ item.daysLeft <= 0 ? 'Vencido' : item.daysLeft + ' dias' }}
+                </p>
               </div>
             </div>
-            <div v-if="recentEntries.length === 0" class="p-4 text-center text-sm text-slate-400">Nenhuma entrada recente.</div>
+            <div v-if="expiries.length === 0" class="text-slate-400 text-sm text-center py-4">
+              Tudo sob controle! 🎉
+            </div>
           </div>
         </div>
 
@@ -484,4 +493,5 @@ const lineChartOptions = {
       </div>
     </div>
   </div>
+  </NuxtLayout>
 </template>

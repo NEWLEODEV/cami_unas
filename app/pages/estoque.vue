@@ -12,7 +12,13 @@ const viewMode = ref('medium') // 'medium', 'large', 'details'
 
 const filterBrand = ref('')
 const filterCollection = ref('')
-const filterMaxPrice = ref('')
+const filterFavoriteLevel = ref('')
+
+const favoriteOptions = [
+  { label: 'Gostei', value: 1 },
+  { label: 'Adorei', value: 2 },
+  { label: 'Super Amei', value: 3 }
+]
 
 const expandedImage = ref(null)
 const productModal = ref(null)
@@ -164,8 +170,8 @@ const filteredEntries = computed(() => {
     result = result.filter(entry => entry.products?.collection?.toLowerCase() === filterLower)
   }
 
-  if (filterMaxPrice.value !== null && filterMaxPrice.value !== '') {
-    result = result.filter(entry => entry.purchase_price <= filterMaxPrice.value)
+  if (filterFavoriteLevel.value) {
+    result = result.filter(entry => entry.products?.favorite_level === filterFavoriteLevel.value)
   }
 
   return result
@@ -200,8 +206,8 @@ definePageMeta({
       </div>
 
       <!-- Filtros na mesma linha -->
-      <div class="flex flex-wrap lg:flex-nowrap items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-3xl lg:rounded-full shadow-sm border border-white shrink-0">
-        <div class="flex items-center gap-2">
+      <div class="flex flex-nowrap overflow-x-auto items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-full shadow-sm border border-white shrink-0" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="flex items-center gap-2 shrink-0">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Marca</span>
           <CustomSelect 
             v-model="filterBrand" 
@@ -211,9 +217,9 @@ definePageMeta({
           />
         </div>
         
-        <div class="w-px h-5 bg-slate-200"></div>
+        <div class="w-px h-5 bg-slate-200 shrink-0"></div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 shrink-0">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Coleção</span>
           <CustomSelect 
             v-model="filterCollection" 
@@ -223,11 +229,40 @@ definePageMeta({
           />
         </div>
 
-        <div class="w-px h-5 bg-slate-200"></div>
+        <div class="w-px h-5 bg-slate-200 shrink-0"></div>
 
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Máx (R$)</span>
-          <input v-model.number="filterMaxPrice" type="number" placeholder="Ex: 15" min="0" step="0.01" class="text-sm bg-transparent border-none focus:ring-0 outline-none text-slate-700 font-medium p-0 w-16 placeholder-slate-300">
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Favoritos</span>
+          <CustomSelect 
+            v-model="filterFavoriteLevel" 
+            :options="favoriteOptions"
+            placeholder="Todos"
+            variant="ghost"
+          >
+            <!-- Custom Option Layout -->
+            <template #option="{ option }">
+              <div class="flex items-center justify-between w-full pr-3">
+                <span class="block truncate">{{ option.label }}</span>
+                <div class="flex items-center gap-0.5 shrink-0" v-if="option.value">
+                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
+                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
+                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
+                </div>
+              </div>
+            </template>
+            <!-- Custom Selected Layout -->
+            <template #selected="{ option }">
+              <div class="flex items-center gap-1.5" v-if="option && option.value">
+                <span class="block truncate text-slate-700 font-medium">{{ option.label }}</span>
+                <div class="flex items-center gap-0.5 shrink-0">
+                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
+                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
+                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
+                </div>
+              </div>
+              <span v-else class="block truncate text-slate-700 font-medium">Todos</span>
+            </template>
+          </CustomSelect>
         </div>
       </div>
 
