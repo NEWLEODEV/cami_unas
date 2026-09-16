@@ -1,12 +1,23 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { ShoppingBag, ExternalLink, Sparkles, Filter, Tag, Search } from 'lucide-vue-next'
+import { ShoppingBag, ExternalLink, Sparkles, Filter, Tag, Search, Heart } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const categories = ref([])
 const loading = ref(true)
 const selectedCategoryId = ref('')
 const searchQuery = ref('')
+const showWishlistOnly = ref(false)
+const wishlistIds = useCookie('shopping_wishlist', { default: () => [] })
+
+const toggleWishlist = (productId) => {
+  let current = wishlistIds.value || []
+  if (current.includes(productId)) {
+    wishlistIds.value = current.filter(id => id !== productId)
+  } else {
+    wishlistIds.value = [...current, productId]
+  }
+}
 
 const fetchShoppingData = async () => {
   loading.value = true
@@ -51,6 +62,11 @@ const filteredProducts = computed(() => {
   } else {
     const category = categories.value.find(c => c.id === selectedCategoryId.value)
     products = category ? category.products : []
+  }
+
+  if (showWishlistOnly.value) {
+    const currentWishlist = wishlistIds.value || []
+    products = products.filter(p => currentWishlist.includes(p.id))
   }
 
   if (searchQuery.value) {
@@ -129,9 +145,19 @@ definePageMeta({
             />
           </div>
         </div>
+
+        <!-- Wishlist Filter -->
+        <button 
+          @click="showWishlistOnly = !showWishlistOnly"
+          :class="showWishlistOnly ? 'bg-rose-50 text-rose-600 border-rose-200 shadow-sm' : 'bg-white/80 text-slate-500 border-white hover:bg-white hover:text-rose-500 shadow-sm'"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all shrink-0 font-bold text-sm backdrop-blur-md"
+        >
+          <Heart class="w-4 h-4" :class="{'fill-current': showWishlistOnly}" />
+          Desejos
+        </button>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-3 sm:gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 w-full">
         <div v-for="product in filteredProducts" :key="product.id" class="bg-white/90 backdrop-blur-md rounded-2xl p-2.5 border border-white shadow-soft hover:shadow-hover transition-all duration-300 flex flex-col group relative">
           
           <!-- Badge Patrocinado -->
@@ -169,6 +195,12 @@ definePageMeta({
               Ver Produto
               <ExternalLink class="w-3.5 h-3.5" />
             </a>
+            
+            <!-- Wishlist Botão -->
+            <button @click="toggleWishlist(product.id)" class="w-full mt-2 font-bold py-2 text-xs rounded-lg flex items-center justify-center gap-1.5 transition-all border shadow-sm" :class="(wishlistIds || []).includes(product.id) ? 'bg-amber-50 text-amber-600 border-amber-300 hover:bg-amber-100' : 'bg-white text-slate-500 border-slate-200 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200'">
+              <Heart class="w-3.5 h-3.5" :class="{'fill-current': (wishlistIds || []).includes(product.id)}" />
+              {{ (wishlistIds || []).includes(product.id) ? 'Na Lista de Desejos' : 'Adcionar a Lista de Desejos' }}
+            </button>
           </div>
         </div>
       </div>

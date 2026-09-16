@@ -21,7 +21,9 @@ const tabs = [
   {
     id: 3,
     title: '📲 Acompanhe a CAMIS',
-    content: 'Não quer perder nenhuma dica, tutorial ou novidade? Use nosso menu lateral para se conectar diretamente com os nossos perfis no TikTok e Instagram, ou para entrar em contato com a gente.'
+    content: `Oi, eu sou Camila... ou melhor, a Camis!
+
+Sabe aquele momento sagrado de escolher a cor do esmalte da semana, passar um hidratante nas mãos e simplesmente esquecer dos problemas lá fora? É exatamente essa energia que eu quero trazer para o seu dia. O Universo CAMIS foi projetado para ser o seu refúgio particular de beleza. Aqui, a gente organiza nossos vidrinhos, planeja o visual e lembra que tirar um tempinho para cuidar de si mesma é um abraço na própria autoestima. Não quer perder nossas fofocas de beleza e tutoriais? Fuça ali no menu lateral e vem me acompanhar no TikTok e no Instagram! Bora colorir a vida juntas?`
   }
 ]
 
@@ -88,7 +90,13 @@ definePageMeta({
               <!-- Conteúdo da Aba Ativa (Sem o Título Repetido) -->
               <div :key="activeTabId" class="w-full max-w-3xl">
                 
-                <p class="text-slate-600 text-lg md:text-xl leading-relaxed">
+                <div v-if="activeTabContent.id === 3" class="mb-8 flex justify-center">
+                  <div class="w-44 h-44 md:w-60 md:h-60 rounded-full overflow-hidden border-4 border-white shadow-[0_4px_20px_-4px_rgba(225,29,72,0.2)] bg-brand-50 shrink-0 transform translate-z-0">
+                    <img src="/Oisoucamila.jpeg" alt="Camila" class="w-full h-full object-cover object-[center_20%]" style="image-rendering: high-quality; -webkit-backface-visibility: hidden; backface-visibility: hidden;">
+                  </div>
+                </div>
+
+                <p class="text-slate-600 text-lg md:text-xl leading-relaxed whitespace-pre-line" :class="{'text-center': activeTabContent.id === 3}">
                   {{ activeTabContent.content }}
                 </p>
                 
