@@ -55,7 +55,24 @@ const handleAuth = async () => {
     }
   }
   
+  
   loading.value = false
+}
+
+const handleOAuth = async (provider) => {
+  errorMsg.value = ''
+  successMsg.value = ''
+  
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: window.location.origin + '/'
+    }
+  })
+
+  if (error) {
+    errorMsg.value = `Falha no login com ${provider}: ` + error.message
+  }
 }
 </script>
 
@@ -64,7 +81,7 @@ const handleAuth = async () => {
     <div class="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-hover p-10 border border-white">
       <div class="text-center mb-10">
         <div class="flex justify-center mx-auto mb-8">
-          <img src="/camis.png" alt="Camis" class="h-32 w-auto object-contain drop-shadow-md hover:scale-105 transition-transform duration-500" />
+          <img src="/camis.png" alt="Camis" class="h-20 w-auto object-contain drop-shadow-md hover:scale-105 transition-transform duration-500" />
         </div>        
       </div>
       
@@ -94,13 +111,16 @@ const handleAuth = async () => {
         <button type="submit" :disabled="loading" class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-medium py-3 rounded-lg transition-colors shadow-sm">
           {{ loading ? 'Aguarde...' : (isRegisterMode ? 'Cadastrar' : 'Entrar') }}
         </button>
-        
-        <div class="text-center text-sm text-slate-500 mt-4">
-          <button type="button" @click="isRegisterMode = !isRegisterMode" class="text-brand-600 hover:text-brand-700 font-bold transition-colors">
-            {{ isRegisterMode ? 'Já tem uma conta? Faça login' : 'Não tem conta? Cadastre-se' }}
-          </button>
-        </div>
       </form>
+      
+      <div class="text-center text-sm text-slate-500 mt-8">
+        <button type="button" @click="isRegisterMode = !isRegisterMode" class="text-brand-600 hover:text-brand-700 font-bold transition-colors">
+          {{ isRegisterMode ? 'Já tem uma conta? Faça login' : 'Não tem conta? Cadastre-se' }}
+        </button>
+      </div>
+
+
+      
     </div>
   </div>
 </template>

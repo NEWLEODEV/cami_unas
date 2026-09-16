@@ -18,13 +18,13 @@ const handleLogout = async () => {
       </div>
       
       <nav class="flex-1 p-6 space-y-2">
-        <NuxtLink to="/admin" exact-active-class="bg-brand-500 text-white shadow-sm" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-slate-800 hover:text-white transition-all duration-300">
-          <LayoutDashboard class="w-5 h-5" />
-          Dashboard
-        </NuxtLink>
         <NuxtLink to="/admin/shopping" active-class="bg-brand-500 text-white shadow-sm" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-slate-800 hover:text-white transition-all duration-300">
           <ShoppingBag class="w-5 h-5" />
           Vitrine / Afiliados
+        </NuxtLink>
+        <NuxtLink to="/admin" exact-active-class="bg-brand-500 text-white shadow-sm" class="flex items-center gap-3 px-5 py-3.5 rounded-2xl hover:bg-slate-800 hover:text-white transition-all duration-300">
+          <LayoutDashboard class="w-5 h-5" />
+          Dashboard
         </NuxtLink>
       </nav>
       
