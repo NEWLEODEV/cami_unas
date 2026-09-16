@@ -61,7 +61,7 @@ const handleLogout = async () => {
         <img src="/camis.png" alt="Cami Unhas" class="h-12 w-auto object-contain" />
       </div>
       
-      <nav class="flex-1 p-6 space-y-1">
+      <nav class="p-6 space-y-1">
         <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <LayoutDashboard class="w-4 h-4" />
           Dashboard
@@ -74,9 +74,11 @@ const handleLogout = async () => {
           <ShoppingBag class="w-4 h-4" />
           Shopping
         </NuxtLink>
-
-
       </nav>
+
+      <div class="flex-1 flex flex-col justify-center w-full min-h-0 py-2">
+        <SidebarOfferCarousel class="h-full" />
+      </div>
       
       <div class="p-6 space-y-1">
         <div class="text-center mb-4 mt-2">

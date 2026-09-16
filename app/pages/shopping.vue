@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { ShoppingBag, ExternalLink, Sparkles, Filter } from 'lucide-vue-next'
+import { ShoppingBag, ExternalLink, Sparkles, Filter, Tag } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const categories = ref([])
@@ -106,9 +106,15 @@ definePageMeta({
         <div v-for="product in filteredProducts" :key="product.id" class="bg-white/90 backdrop-blur-md rounded-2xl p-2.5 border border-white shadow-soft hover:shadow-hover transition-all duration-300 flex flex-col group relative">
           
           <!-- Badge Patrocinado -->
-          <div v-if="product.is_sponsored" class="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 border border-white/50">
-            <Sparkles class="w-3 h-3" />
+          <div v-if="product.is_sponsored" class="absolute -top-1.5 -right-1.5 z-10 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shadow-sm flex items-center gap-0.5 border border-white/50">
+            <Sparkles class="w-2.5 h-2.5" />
             Patrocinado
+          </div>
+
+          <!-- Badge Oferta -->
+          <div v-if="product.is_offer" class="absolute -top-1.5 -left-1.5 z-10 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full shadow-sm flex items-center gap-0.5 border border-white/50">
+            <Tag class="w-2.5 h-2.5" />
+            Oferta
           </div>
           
           <!-- Imagem do Produto -->

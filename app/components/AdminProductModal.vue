@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { X, Save, Sparkles } from 'lucide-vue-next'
+import { X, Save, Sparkles, Tag } from 'lucide-vue-next'
 
 const props = defineProps({
   product: {
@@ -25,6 +25,7 @@ const formData = ref({
   redirect_slug: '',
   affiliate_url: '',
   is_sponsored: false,
+  is_offer: false,
   is_active: true
 })
 const errorMsg = ref('')
@@ -42,6 +43,7 @@ watch(() => props.product, (newVal) => {
       redirect_slug: '', 
       affiliate_url: '', 
       is_sponsored: false, 
+      is_offer: false,
       is_active: true 
     }
   }
@@ -91,6 +93,7 @@ const handleSubmit = async () => {
           image_url: formData.value.image_url,
           affiliate_url: formData.value.affiliate_url,
           is_sponsored: formData.value.is_sponsored,
+          is_offer: formData.value.is_offer,
           is_active: formData.value.is_active
         })
         .eq('id', props.product.id)
@@ -108,6 +111,7 @@ const handleSubmit = async () => {
           redirect_slug: formData.value.redirect_slug,
           affiliate_url: formData.value.affiliate_url,
           is_sponsored: formData.value.is_sponsored,
+          is_offer: formData.value.is_offer,
           is_active: formData.value.is_active
         }])
         
@@ -239,6 +243,17 @@ const handleSubmit = async () => {
                 </div>
                 <span class="text-xs font-bold text-slate-700 flex items-center gap-1 text-amber-600">
                   <Sparkles class="w-3.5 h-3.5" /> Marcar como Patrocinado
+                </span>
+              </label>
+
+              <!-- Oferta -->
+              <label class="flex items-center gap-2 cursor-pointer">
+                <div class="relative">
+                  <input type="checkbox" v-model="formData.is_offer" class="sr-only peer" />
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-500"></div>
+                </div>
+                <span class="text-xs font-bold text-slate-700 flex items-center gap-1 text-brand-600">
+                  <Tag class="w-3.5 h-3.5" /> Ofertas
                 </span>
               </label>
             </div>

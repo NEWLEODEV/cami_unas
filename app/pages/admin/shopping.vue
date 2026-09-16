@@ -199,9 +199,10 @@ const deleteCategory = async (id) => {
                     <ShoppingBag v-else class="w-5 h-5 text-slate-300" />
                   </div>
                   <div>
-                    <p class="font-bold text-slate-800 text-sm leading-tight flex items-center gap-1">
+                    <p class="font-bold text-slate-800 text-sm leading-tight flex items-center flex-wrap gap-1">
                       {{ prod.title }}
                       <span v-if="prod.is_sponsored" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wider ml-1 border border-amber-200">Patrocinado</span>
+                      <span v-if="prod.is_offer" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand-100 text-brand-700 uppercase tracking-wider ml-1 border border-brand-200">Oferta</span>
                     </p>
                     <p class="text-xs text-slate-500 mt-0.5 max-w-[200px] truncate" :title="prod.affiliate_url">{{ prod.affiliate_url }}</p>
                   </div>
