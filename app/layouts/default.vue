@@ -1,5 +1,5 @@
 <script setup>
-import { LayoutDashboard, Package, Droplet, LogOut, Instagram, Phone, PlaySquare, ShoppingBag, Settings } from 'lucide-vue-next'
+import { LayoutDashboard, Package, Droplet, LogOut, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info } from 'lucide-vue-next'
 import { ref, onMounted, computed } from 'vue'
 
 const supabase = useSupabaseClient()
@@ -54,52 +54,59 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col md:flex-row bg-transparent">
+  <div class="h-screen overflow-hidden flex flex-col md:flex-row bg-transparent">
     <!-- Sidebar (Floating Style) -->
     <aside class="hidden md:flex w-64 bg-white/80 backdrop-blur-md border-r border-brand-100 flex-col shrink-0 m-4 rounded-3xl shadow-soft">
-      <div class="h-20 flex items-center justify-center border-b border-brand-50 mx-6">
-        <img src="/camis.png" alt="Cami Unhas" class="h-12 w-auto object-contain" />
+      <div class="h-16 flex items-center justify-center border-b border-brand-50 mx-6">
+        <img src="/camis.png" alt="Cami Unhas" class="h-10 w-auto object-contain" />
       </div>
       
-      <nav class="p-6 space-y-1">
-        <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+      <nav class="px-6 pt-4 pb-2 space-y-0.5">
+        <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <LayoutDashboard class="w-4 h-4" />
           Dashboard
         </NuxtLink>
-         <NuxtLink to="/estoque" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+         <NuxtLink to="/estoque" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Droplet class="w-4 h-4" />
           Meus Esmaltes
         </NuxtLink>
-        <NuxtLink to="/shopping" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/shopping" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <ShoppingBag class="w-4 h-4" />
           Shopping
         </NuxtLink>
       </nav>
 
-      <div class="flex-1 flex flex-col justify-center w-full min-h-0 py-2">
+      <div class="flex-1 flex flex-col justify-center w-full min-h-0">
         <SidebarOfferCarousel class="h-full" />
       </div>
+
+      <nav class="px-6 pt-2 pb-2">
+        <NuxtLink to="/sobre" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+          <Info class="w-4 h-4" />
+          Sobre
+        </NuxtLink>
+      </nav>
       
-      <div class="p-6 space-y-1">
-        <div class="text-center mb-4 mt-2">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acompanhe a Camis</span>
+      <div class="px-6 pb-4 space-y-0.5">
+        <div class="text-center mb-2 mt-1">
+          <span class="text-[10px] font-bold text-[#DE2B77] uppercase tracking-widest">Acompanhe a Camis</span>
         </div>
-        <a href="https://www.tiktok.com/@nailsbycamis" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
+        <a href="https://www.tiktok.com/@nailsbycamis" target="_blank" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
           <PlaySquare class="w-4 h-4" />
-          TikTok
+          no TikTok
         </a>
-        <a href="https://www.instagram.com/unhasbycamis/" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
+        <a href="https://www.instagram.com/unhasbycamis/" target="_blank" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300">
           <Instagram class="w-4 h-4" />
-          Instagram
+          no Instagram
         </a>
-        <NuxtLink to="/contatos" class="flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/contatos" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Phone class="w-4 h-4" />
-          Contatos
+          Entre em Contato
         </NuxtLink>
 
-        <div class="pt-2 mt-2 border-t border-brand-50">
-          <button @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors font-medium">
-            <LogOut class="w-5 h-5" />
+        <div class="pt-1 mt-1 border-t border-brand-50">
+          <button @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors font-semibold text-sm shadow-sm border border-rose-100/50">
+            <LogOut class="w-4 h-4" />
             Sair
           </button>
         </div>

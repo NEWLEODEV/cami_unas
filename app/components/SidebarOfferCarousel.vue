@@ -66,7 +66,7 @@ onUnmounted(() => {
             <span class="text-brand-300">Sem Imagem</span>
           </div>
 
-          <div class="absolute top-2 left-2 z-10 bg-brand-500/80 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm border border-white/20 flex items-center gap-1">
+          <div class="absolute top-2 right-2 z-10 bg-amber-500/80 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm border border-white/20 flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
             Oferta
           </div>
