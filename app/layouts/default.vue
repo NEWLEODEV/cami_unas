@@ -62,7 +62,7 @@ const handleLogout = async () => {
       </div>
       
       <nav class="px-6 pt-4 pb-2 space-y-0.5">
-        <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/dashboard" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <LayoutDashboard class="w-4 h-4" />
           Dashboard
         </NuxtLink>
@@ -81,7 +81,7 @@ const handleLogout = async () => {
       </div>
 
       <nav class="px-6 pt-2 pb-2">
-        <NuxtLink to="/sobre" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Info class="w-4 h-4" />
           Sobre
         </NuxtLink>
