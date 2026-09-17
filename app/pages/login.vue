@@ -11,6 +11,13 @@ const loading = ref(false)
 const isRegisterMode = ref(false)
 
 const route = useRoute()
+const user = useSupabaseUser()
+
+watchEffect(() => {
+  if (user.value) {
+    navigateTo('/')
+  }
+})
 
 // Sem layout, pois a tela de login ocupa tudo
 definePageMeta({
@@ -50,8 +57,6 @@ const handleAuth = async () => {
 
     if (error) {
       errorMsg.value = 'Falha no login. Verifique suas credenciais.'
-    } else {
-      navigateTo('/')
     }
   }
   
