@@ -185,13 +185,16 @@ definePageMeta({
 <template>
   <NuxtLayout name="default">
     <template #header-left>
-      <p class="text-slate-600 font-medium text-lg truncate">Lista de todas as movimentações de estoque</p>
+      <p class="text-lg truncate">
+        <span class="text-slate-700 font-bold">Meu Acervo de Beleza</span>
+        <span class="text-slate-500 font-medium ml-1">- Aqui você organiza todos os seus produtos, como esmaltes, bases, batons e o que mais você amar.</span>
+      </p>
     </template>
 
     <div class="space-y-6">
 
 
-    <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative -mt-4 lg:-mt-6">
       <!-- Barra de Busca -->
       <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
         <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">

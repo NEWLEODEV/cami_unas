@@ -246,12 +246,14 @@ definePageMeta({
 <template>
   <NuxtLayout name="default">
     <template #header-left>
-      <p class="text-slate-600 font-medium text-lg truncate">Dashboard</p>
+      <p class="text-lg truncate">
+        <span class="text-slate-700 font-bold">Painel Inteligente</span>
+        <span class="text-slate-500 font-medium ml-1">- Tenha uma visão completa e super simples de toda a sua coleção.</span>
+      </p>
     </template>
 
-    <div class="space-y-6 max-w-7xl mx-auto py-6 md:py-8 px-4 md:px-8 h-full">
-      <!-- Overview Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="space-y-6 h-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 -mt-4 md:-mt-6 relative z-10 p-1">
       <div class="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-soft flex items-center gap-4 border border-white hover:-translate-y-1 transition-transform duration-300">
         <div class="w-12 h-12 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-500 shadow-sm border border-brand-100/50">
           <Package class="w-6 h-6" />

@@ -95,7 +95,10 @@ definePageMeta({
 <template>
   <NuxtLayout name="default">
     <template #header-left>
-      <p class="text-slate-600 font-medium text-lg truncate">Nossas recomendações de produtos selecionados a dedo para você.</p>
+      <p class="text-lg truncate">
+        <span class="text-slate-700 font-bold">Dia de comprinhas? Que delícia!</span>
+        <span class="text-slate-500 font-medium ml-1">- Aqui separei meus achados favoritos: tudo testado e escolhido a dedo pra você.</span>
+      </p>
     </template>
 
     <div class="space-y-8">
@@ -119,7 +122,7 @@ definePageMeta({
     <div v-else class="space-y-8">
       
       <!-- Filters and Search -->
-      <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative -mt-4 lg:-mt-6">
         <!-- Barra de Busca -->
         <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
           <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">

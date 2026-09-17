@@ -16,7 +16,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     // Se o usuário não tiver ID válido e não for o admin principal, expulsa
     if (!user.value.id) {
-      return navigateTo('/sobre')
+      return navigateTo('/')
     }
 
     const supabase = useSupabaseClient()
@@ -38,7 +38,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     // Se não for administrador (ou se der erro/não existir), expulsa para a página principal
     if (!data || data.is_admin !== true) {
       console.log('REDIRECIONANDO PARA HOME - NÃO É ADMIN')
-      return navigateTo('/sobre')
+      return navigateTo('/')
     }
   }
 })
