@@ -1,5 +1,5 @@
 <script setup>
-import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2, Grid, LayoutGrid, List, Heart, CheckCircle2 } from 'lucide-vue-next'
+import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Grid, LayoutGrid, List, ArrowRightLeft } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const { showConfirm, showAlert } = useDialog()
@@ -12,19 +12,12 @@ const viewMode = ref('medium') // 'medium', 'large', 'details'
 
 const filterBrand = ref('')
 const filterCollection = ref('')
-const filterFavoriteLevel = ref('')
-
-const favoriteOptions = [
-  { label: 'Gostei', value: 1 },
-  { label: 'Adorei', value: 2 },
-  { label: 'Super Amei', value: 3 }
-]
 
 const expandedImage = ref(null)
 const productModal = ref(null)
+const tradeModal = ref(null)
 
 const openNewModal = () => productModal.value?.openNewModal()
-const openEditModal = (entry) => productModal.value?.openEditModal(entry.product_id, entry.id)
 
 const fetchEntries = async () => {
   loading.value = true
@@ -35,6 +28,7 @@ const fetchEntries = async () => {
       products (
         id,
         name,
+        category,
         brand,
         color,
         collection,
@@ -65,45 +59,13 @@ const fetchProducts = async () => {
   loadingProducts.value = false
 }
 
-const deleteEntry = async (id) => {
-  const confirmed = await showConfirm('Tem certeza que deseja excluir esta movimentação de estoque?')
-  if (!confirmed) return
-  
-  const { error } = await supabase.from('inventory_entries').delete().eq('id', id)
-  if (!error) {
-    fetchEntries()
-  } else {
-    await showAlert('Erro ao excluir entrada: ' + error.message, 'Erro')
-  }
+
+
+const toggleTradeStatus = (entry) => {
+  tradeModal.value?.openModal(entry)
 }
 
-const setFavoriteLevel = async (product, level) => {
-  if (!product) return;
-  
-  // Se clicar no mesmo nível, zera a avaliação
-  const newValue = product.favorite_level === level ? 0 : level;
-  const oldValue = product.favorite_level;
-  
-  product.favorite_level = newValue;
-  
-  const { error } = await supabase.from('products').update({ favorite_level: newValue }).eq('id', product.id);
-  if (error) {
-    product.favorite_level = oldValue;
-    await showAlert('Erro', 'Não foi possível atualizar o favorito: ' + error.message);
-  }
-}
 
-const toggleUsed = async (product) => {
-  if (!product) return;
-  const newValue = !product.is_used;
-  product.is_used = newValue;
-  
-  const { error } = await supabase.from('products').update({ is_used: newValue }).eq('id', product.id);
-  if (error) {
-    product.is_used = !newValue;
-    await showAlert('Erro', 'Não foi possível atualizar o status de uso: ' + error.message);
-  }
-}
 
 onMounted(() => {
   fetchEntries()
@@ -153,6 +115,7 @@ const filteredEntries = computed(() => {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(entry => 
       (entry.products?.name && entry.products.name.toLowerCase().includes(query)) ||
+      (entry.products?.category && entry.products.category.toLowerCase().includes(query)) ||
       (entry.products?.brand && entry.products.brand.toLowerCase().includes(query)) ||
       (entry.products?.color && entry.products.color.toLowerCase().includes(query)) ||
       (entry.products?.size_variation && entry.products.size_variation.toLowerCase().includes(query)) ||
@@ -170,9 +133,7 @@ const filteredEntries = computed(() => {
     result = result.filter(entry => entry.products?.collection?.toLowerCase() === filterLower)
   }
 
-  if (filterFavoriteLevel.value) {
-    result = result.filter(entry => entry.products?.favorite_level === filterFavoriteLevel.value)
-  }
+
 
   return result
 })
@@ -233,41 +194,7 @@ definePageMeta({
           />
         </div>
 
-        <div class="w-px h-5 bg-slate-200 shrink-0"></div>
 
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Favoritos</span>
-          <CustomSelect 
-            v-model="filterFavoriteLevel" 
-            :options="favoriteOptions"
-            placeholder="Todos"
-            variant="ghost"
-          >
-            <!-- Custom Option Layout -->
-            <template #option="{ option }">
-              <div class="flex items-center justify-between w-full pr-3">
-                <span class="block truncate">{{ option.label }}</span>
-                <div class="flex items-center gap-0.5 shrink-0" v-if="option.value">
-                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
-                </div>
-              </div>
-            </template>
-            <!-- Custom Selected Layout -->
-            <template #selected="{ option }">
-              <div class="flex items-center gap-1.5" v-if="option && option.value">
-                <span class="block truncate text-slate-700 font-medium">{{ option.label }}</span>
-                <div class="flex items-center gap-0.5 shrink-0">
-                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
-                </div>
-              </div>
-              <span v-else class="block truncate text-slate-700 font-medium">Todos</span>
-            </template>
-          </CustomSelect>
-        </div>
       </div>
 
       <!-- Controles de Visualização -->
@@ -323,22 +250,7 @@ definePageMeta({
                 <td class="py-5 px-8">
                   <div class="flex items-center gap-2 mb-1">
                     <p class="font-semibold text-rose-950 group-hover:text-brand-600 transition-colors">{{ entry.products?.name || 'Produto Excluído' }}</p>
-                    <div v-if="entry.products" class="flex items-center gap-1">
-                      <div class="flex items-end gap-0.5 group/hearts mr-2">
-                        <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Gostei">
-                          <Heart class="w-3 h-3" :class="{'fill-current': entry.products.favorite_level >= 1}" />
-                        </button>
-                        <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Adorei">
-                          <Heart class="w-3.5 h-3.5" :class="{'fill-current': entry.products.favorite_level >= 2}" />
-                        </button>
-                        <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 transition-colors" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Super Amei">
-                          <Heart class="w-4 h-4" :class="{'fill-current': entry.products.favorite_level >= 3}" />
-                        </button>
-                      </div>
-                      <button @click.stop="toggleUsed(entry.products)" class="p-1 rounded-full transition-colors" :class="entry.products.is_used ? 'text-emerald-500' : 'text-slate-300 hover:text-emerald-400'" data-tooltip="Testado/Usado">
-                        <CheckCircle2 class="w-4 h-4" />
-                      </button>
-                    </div>
+
                   </div>
                   <p class="text-sm text-slate-400 mt-0.5" v-if="entry.products">
                     {{ entry.products.brand }} {{ entry.products.color ? `• ${entry.products.color}` : '' }} 
@@ -366,12 +278,10 @@ definePageMeta({
                 </td>
                 <td class="py-5 px-8 text-right">
                   <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button @click="openEditModal(entry)" class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
-                      <Pencil class="w-4 h-4" />
+                    <button @click="toggleTradeStatus(entry)" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-colors tooltip-left" data-tooltip="Disponivel para troca">
+                      <ArrowRightLeft class="w-4 h-4" />
                     </button>
-                    <button @click="deleteEntry(entry.id)" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors tooltip-left" data-tooltip="Excluir">
-                      <Trash2 class="w-4 h-4" />
-                    </button>
+
                   </div>
                 </td>
               </tr>
@@ -384,34 +294,13 @@ definePageMeta({
           <div v-for="entry in filteredEntries" :key="entry.id" class="bg-white/80 backdrop-blur-md border border-white rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden">
             <!-- Ações -->
             <div class="absolute top-4 right-4 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-brand-50">
-              <button @click="openEditModal(entry)" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
-                <Pencil class="w-3.5 h-3.5" />
+              <button @click="toggleTradeStatus(entry)" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-colors tooltip-left" data-tooltip="Disponivel para troca">
+                <ArrowRightLeft class="w-3.5 h-3.5" />
               </button>
-              <button @click="deleteEntry(entry.id)" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors tooltip-left" data-tooltip="Excluir">
-                <Trash2 class="w-3.5 h-3.5" />
-              </button>
+
             </div>
 
-            <!-- Indicadores (Favorito e Usado) -->
-            <div class="absolute top-4 left-4 flex flex-col items-center gap-1.5 z-10" v-if="entry.products">
-              <!-- Hearts Stack -->
-              <div class="flex flex-col items-center gap-0.5 group/hearts bg-white/60 hover:bg-white/90 backdrop-blur-sm rounded-full p-1 pb-1.5 transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-white/50 hover:border-brand-50" :class="{'opacity-0 group-hover:opacity-100': !entry.products.favorite_level}">
-                <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Super Amei">
-                  <Heart class="w-5 h-5" :class="{'fill-current': entry.products.favorite_level >= 3}" />
-                </button>
-                <button @click.stop="setFavoriteLevel(entry.products, 2)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 2 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Adorei">
-                  <Heart class="w-4 h-4" :class="{'fill-current': entry.products.favorite_level >= 2}" />
-                </button>
-                <button @click.stop="setFavoriteLevel(entry.products, 1)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 1 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Gostei">
-                  <Heart class="w-3.5 h-3.5" :class="{'fill-current': entry.products.favorite_level >= 1}" />
-                </button>
-              </div>
 
-              <!-- Usado/Testado Button -->
-              <button @click.stop="toggleUsed(entry.products)" class="p-1.5 rounded-full transition-all shadow-sm border tooltip-right" :class="entry.products.is_used ? 'text-emerald-500 bg-white border-emerald-100 opacity-100' : 'text-slate-300 bg-white/80 border-transparent opacity-0 group-hover:opacity-100 hover:text-emerald-400'" data-tooltip="Usado / Testado">
-                <CheckCircle2 class="w-4 h-4" />
-              </button>
-            </div>
 
             <div class="flex flex-col items-center text-center gap-3 mb-5 mt-2">
               <div v-if="entry.products?.image_url" @click="expandedImage = entry.products.image_url" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden cursor-pointer hover:scale-105 transition-transform relative group/img">
@@ -458,6 +347,7 @@ definePageMeta({
     </div>
 
     <ProductFormModal ref="productModal" @saved="fetchEntries" />
+    <TradeFormModal ref="tradeModal" />
 
     <!-- Modal de Imagem Expandida -->
     <div v-if="expandedImage" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-rose-950/60 backdrop-blur-md" @click="expandedImage = null">

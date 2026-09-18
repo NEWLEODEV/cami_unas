@@ -35,6 +35,7 @@ const fetchEntries = async () => {
       products (
         id,
         name,
+        category,
         brand,
         color,
         collection,
@@ -153,6 +154,7 @@ const filteredEntries = computed(() => {
     const query = searchQuery.value.toLowerCase()
     result = result.filter(entry => 
       (entry.products?.name && entry.products.name.toLowerCase().includes(query)) ||
+      (entry.products?.category && entry.products.category.toLowerCase().includes(query)) ||
       (entry.products?.brand && entry.products.brand.toLowerCase().includes(query)) ||
       (entry.products?.color && entry.products.color.toLowerCase().includes(query)) ||
       (entry.products?.size_variation && entry.products.size_variation.toLowerCase().includes(query)) ||
