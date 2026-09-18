@@ -1,5 +1,5 @@
 <script setup>
-import { LayoutDashboard, Package, Droplet, LogOut, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info } from 'lucide-vue-next'
+import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info } from 'lucide-vue-next'
 import { ref, onMounted, computed } from 'vue'
 
 const supabase = useSupabaseClient()
@@ -40,11 +40,14 @@ onMounted(async () => {
       // Fallback genérico caso o usuário não tenha cadastrado um nome
       userName.value = 'Usuário'
     }
+  } else {
+    userName.value = 'Visitante'
   }
 })
 
 const userInitial = computed(() => {
-  return userName.value ? userName.value.charAt(0).toUpperCase() : 'U'
+  if (userName.value === 'Carregando...') return 'U'
+  return userName.value ? userName.value.charAt(0).toUpperCase() : 'V'
 })
 
 const handleLogout = async () => {
@@ -58,7 +61,9 @@ const handleLogout = async () => {
     <!-- Sidebar (Floating Style) -->
     <aside class="hidden md:flex w-64 bg-white/80 backdrop-blur-md border-r border-brand-100 flex-col shrink-0 m-4 rounded-3xl shadow-soft">
       <div class="h-16 flex items-center justify-center border-b border-brand-50 mx-6">
-        <img src="/camis.png" alt="Cami Unhas" class="h-10 w-auto object-contain" />
+        <NuxtLink to="/" class="block">
+          <img src="/camis.png" alt="Cami Unhas" class="h-10 w-auto object-contain transition-transform hover:scale-105" />
+        </NuxtLink>
       </div>
       
       <nav class="px-6 pt-4 pb-2 space-y-0.5">
@@ -105,10 +110,14 @@ const handleLogout = async () => {
         </NuxtLink>
 
         <div class="pt-1 mt-1 border-t border-brand-50">
-          <button @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors font-semibold text-sm shadow-sm border border-rose-100/50">
+          <button v-if="user" @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors font-semibold text-sm shadow-sm border border-rose-100/50">
             <LogOut class="w-4 h-4" />
             Sair
           </button>
+          <NuxtLink v-else to="/login" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-brand-50 text-brand-600 hover:bg-brand-100 hover:text-brand-700 transition-colors font-semibold text-sm shadow-sm border border-brand-100/50">
+            <LogIn class="w-4 h-4" />
+            Entrar
+          </NuxtLink>
         </div>
       </div>
     </aside>
@@ -119,7 +128,9 @@ const handleLogout = async () => {
       <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 shrink-0 bg-white/50 md:bg-transparent backdrop-blur-md sticky top-0 z-30 md:static">
         <!-- Logo Mobile -->
         <div class="md:hidden">
-          <img src="/camis.png" alt="Cami Unhas" class="h-8 w-auto object-contain" />
+          <NuxtLink to="/" class="block">
+            <img src="/camis.png" alt="Cami Unhas" class="h-8 w-auto object-contain transition-transform hover:scale-105" />
+          </NuxtLink>
         </div>
 
         <div class="hidden md:block flex-1 mr-4">
@@ -159,10 +170,14 @@ const handleLogout = async () => {
         <ShoppingBag class="w-6 h-6" />
         <span class="text-[10px] font-medium">Shopping</span>
       </NuxtLink>
-      <button @click="handleLogout" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-rose-600">
+      <button v-if="user" @click="handleLogout" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-rose-600">
         <LogOut class="w-6 h-6" />
         <span class="text-[10px] font-medium">Sair</span>
       </button>
+      <NuxtLink v-else to="/login" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-brand-600">
+        <LogIn class="w-6 h-6" />
+        <span class="text-[10px] font-medium">Entrar</span>
+      </NuxtLink>
     </nav>
 
     <AppDialog />
