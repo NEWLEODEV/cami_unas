@@ -211,7 +211,7 @@ const saveProduct = async () => {
     brand: finalBrand,
     color: newProduct.value.color,
     collection: newProduct.value.collection,
-    description: newProduct.value.description,
+    // description: newProduct.value.description, // Comentado temporariamente até a coluna ser criada no banco
     unit_measure: newProduct.value.unit_measure,
     size_variation: newProduct.value.size_variation
   }
