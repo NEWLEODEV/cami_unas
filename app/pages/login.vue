@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { ArrowLeft } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const name = ref('')
@@ -124,7 +125,12 @@ const handleOAuth = async (provider) => {
         </button>
       </div>
 
-
+      <div class="mt-6 pt-6 border-t border-slate-100 flex justify-center">
+        <NuxtLink to="/" class="flex items-center gap-2 text-sm text-slate-400 hover:text-brand-600 transition-colors font-medium">
+          <ArrowLeft class="w-4 h-4" />
+          Voltar para a Home como visitante
+        </NuxtLink>
+      </div>
       
     </div>
   </div>

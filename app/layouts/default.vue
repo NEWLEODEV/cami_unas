@@ -1,5 +1,5 @@
 <script setup>
-import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info } from 'lucide-vue-next'
+import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info, ArrowRightLeft } from 'lucide-vue-next'
 import { ref, onMounted, computed } from 'vue'
 
 const supabase = useSupabaseClient()
@@ -74,6 +74,10 @@ const handleLogout = async () => {
          <NuxtLink to="/estoque" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Droplet class="w-4 h-4" />
           Minha Coleção
+        </NuxtLink>
+        <NuxtLink to="/trade" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+          <ArrowRightLeft class="w-4 h-4" />
+          Trade
         </NuxtLink>
         <NuxtLink to="/shopping" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <ShoppingBag class="w-4 h-4" />
@@ -165,6 +169,10 @@ const handleLogout = async () => {
       <NuxtLink to="/estoque" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
         <Droplet class="w-6 h-6" />
         <span class="text-[10px] font-medium">Esmaltes</span>
+      </NuxtLink>
+      <NuxtLink to="/trade" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
+        <ArrowRightLeft class="w-6 h-6" />
+        <span class="text-[10px] font-medium">Trade</span>
       </NuxtLink>
       <NuxtLink to="/shopping" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
         <ShoppingBag class="w-6 h-6" />
