@@ -12,7 +12,6 @@ const loading = ref(true)
 // Filtros
 const searchProduct = ref('')
 const searchCity = ref('')
-const searchState = ref('')
 
 // Para controlar botões de "solicitando..."
 const requestingIds = ref([])
@@ -82,11 +81,6 @@ const filteredItems = computed(() => {
     result = result.filter(item => item.profiles?.city?.toLowerCase().includes(q))
   }
 
-  if (searchState.value) {
-    const q = searchState.value.toLowerCase()
-    result = result.filter(item => item.profiles?.state?.toLowerCase() === q)
-  }
-
   return result
 })
 
@@ -103,7 +97,7 @@ const paginatedItems = computed(() => {
   return filteredItems.value.slice(start, end)
 })
 
-watch([searchProduct, searchCity, searchState], () => {
+watch([searchProduct, searchCity], () => {
   currentPage.value = 1
 })
 
@@ -208,14 +202,7 @@ definePageMeta({
             v-model="searchCity" 
             type="text" 
             placeholder="Cidade..." 
-            class="w-1/2 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0 border-r border-slate-200"
-          >
-          <input 
-            v-model="searchState" 
-            type="text" 
-            placeholder="UF..." 
-            maxlength="2"
-            class="w-16 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0 uppercase text-center"
+            class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0"
           >
         </div>
       </div>
@@ -233,7 +220,7 @@ definePageMeta({
         <p class="text-sm text-slate-400 mt-1">Tente mudar a cidade, estado ou os termos de busca.</p>
       </div>
 
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         <div v-for="item in paginatedItems" :key="item.id" class="h-full bg-white/80 backdrop-blur-md border border-white rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all flex flex-col justify-between relative overflow-hidden group">
           
           <!-- Badges Topo -->
@@ -272,9 +259,6 @@ definePageMeta({
             <!-- Usuário -->
             <div class="flex flex-col items-center gap-1">
               <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-full bg-gradient-to-br from-brand-400 to-rose-400 text-white flex items-center justify-center text-xs font-bold shadow-sm shrink-0">
-                  {{ item.profiles?.name?.charAt(0).toUpperCase() }}
-                </div>
                 <p class="text-sm font-bold text-slate-700 truncate">{{ item.profiles?.name }}</p>
               </div>
               <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
@@ -298,10 +282,10 @@ definePageMeta({
             <button 
               @click="requestTrade(item)" 
               :disabled="requestingIds.includes(item.id)"
-              class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-3 rounded-xl flex items-center justify-center gap-2 transition-all font-bold shadow-sm disabled:opacity-50"
+              class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-2 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all font-bold text-[13px] whitespace-nowrap shadow-sm disabled:opacity-50"
             >
-              <HeartHandshake v-if="!requestingIds.includes(item.id)" class="w-5 h-5" />
-              <span v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <HeartHandshake v-if="!requestingIds.includes(item.id)" class="w-4 h-4 shrink-0" />
+              <span v-else class="w-4 h-4 shrink-0 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               {{ requestingIds.includes(item.id) ? 'Enviando...' : 'Solicitar Negociação' }}
             </button>
           </div>
