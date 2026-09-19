@@ -34,8 +34,24 @@ onMounted(async () => {
     console.log('isAdmin final:', isAdmin.value)
     
     if (fullName) {
-      // Pega apenas o primeiro nome
-      userName.value = fullName.split(' ')[0]
+      const parts = fullName.trim().split(/\s+/)
+      if (parts.length <= 1) {
+        userName.value = fullName
+      } else if (parts.length === 2) {
+        userName.value = fullName
+      } else {
+        // Lista de primeiros nomes compostos comuns no Brasil
+        const compositePrefixes = ['ana', 'maria', 'joão', 'joao', 'josé', 'jose', 'pedro', 'luiz', 'luis', 'carlos', 'paulo', 'antônio', 'antonio', 'marcos', 'julio']
+        let firstName = parts[0]
+        
+        // Se o primeiro nome for um prefixo composto comum, pegamos os dois primeiros
+        if (compositePrefixes.includes(parts[0].toLowerCase())) {
+          firstName = parts[0] + ' ' + parts[1]
+        }
+        
+        const lastName = parts[parts.length - 1]
+        userName.value = `${firstName} ${lastName}`
+      }
     } else {
       // Fallback genérico caso o usuário não tenha cadastrado um nome
       userName.value = 'Usuário'

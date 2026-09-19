@@ -5,6 +5,8 @@ import { X, PackageOpen } from 'lucide-vue-next'
 const isOpen = ref(false)
 const isSubmitting = ref(false)
 const entry = ref(null)
+const supabase = useSupabaseClient()
+const user = useSupabaseUser()
 
 const form = ref({
   quantity: 1,
@@ -30,15 +32,40 @@ const openModal = (item) => {
 const submitTrade = async () => {
   isSubmitting.value = true
   
-  // Aqui futuramente será feita a integração com o banco de dados
-  // para salvar os dados da intenção de trade.
-  
-  setTimeout(async () => {
+  const { data: authData } = await supabase.auth.getUser()
+  const currentUser = authData?.user
+
+  if (!currentUser) {
     isSubmitting.value = false
-    isOpen.value = false
-    await showAlert('Sucesso!', 'Produto disponibilizado com sucesso! (A integração com o banco de dados será implementada em breve)')
-    emit('saved', { ...form.value, entry: entry.value })
-  }, 1000)
+    await showAlert('Erro', 'Você precisa estar logado para fazer isso.')
+    return
+  }
+
+  const payload = {
+    user_id: currentUser.id,
+    inventory_entry_id: entry.value.id,
+    product_id: entry.value.products?.id || entry.value.product_id, // Garantir que o product_id existe
+    quantity: form.value.quantity,
+    condition: form.value.condition,
+    intent: form.value.intent,
+    price: form.value.intent === 'vender' ? form.value.price : 0
+  }
+
+  console.log('Enviando payload para trade_items:', payload)
+
+  const { error } = await supabase.from('trade_items').insert(payload)
+
+  isSubmitting.value = false
+
+  if (error) {
+    console.error('Erro no Supabase:', error)
+    await showAlert('Erro', 'Ocorreu um erro ao disponibilizar: ' + error.message)
+    return
+  }
+  
+  isOpen.value = false
+  await showAlert('Sucesso!', 'Seu produto agora está visível para outras pessoas!')
+  emit('saved', { ...form.value, entry: entry.value })
 }
 
 const formatMonthYear = (dateString) => {
