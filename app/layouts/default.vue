@@ -1,11 +1,12 @@
 <script setup>
-import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info, ArrowRightLeft } from 'lucide-vue-next'
+import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info, ArrowRightLeft, User, UserCog, ChevronDown } from 'lucide-vue-next'
 import { ref, onMounted, computed } from 'vue'
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const userName = ref('')
 const isAdmin = ref(false)
+const isUserMenuOpen = ref(false)
 
 onMounted(async () => {
   if (user.value) {
@@ -157,15 +158,37 @@ const handleLogout = async () => {
           <slot name="header-left" />
         </div>
         
-        <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-white shrink-0">
-          <NuxtLink v-if="isAdmin" to="/admin" class="flex items-center gap-2 px-3 py-1.5 text-xs rounded-full text-brand-700 bg-white hover:bg-brand-50 transition-colors font-bold border border-brand-100 shadow-sm">
-            <Settings class="w-3.5 h-3.5 text-brand-500" />
-            <span class="hidden sm:inline">Painel Admin</span>
-          </NuxtLink>
-          <div v-if="isAdmin" class="bg-brand-100 text-brand-700 text-xs px-2 py-1 rounded-full font-bold">ADMIN</div>
-          <span class="text-sm font-medium text-slate-600">Olá, {{ userName || 'Carregando...' }}</span>
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-200 to-brand-100 flex items-center justify-center text-brand-700 font-bold border-2 border-white shadow-sm">
-            {{ userInitial }}
+        <!-- User Menu Dropdown -->
+        <div class="relative">
+          <div class="flex items-center gap-4 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-white shrink-0 cursor-pointer hover:bg-white/80 transition-colors" @click="isUserMenuOpen = !isUserMenuOpen">
+            <NuxtLink v-if="isAdmin" to="/admin" class="flex items-center gap-2 px-3 py-1.5 text-xs rounded-full text-brand-700 bg-white hover:bg-brand-50 transition-colors font-bold border border-brand-100 shadow-sm" @click.stop>
+              <Settings class="w-3.5 h-3.5 text-brand-500" />
+              <span class="hidden sm:inline">Painel Admin</span>
+            </NuxtLink>
+            <div v-if="isAdmin" class="bg-brand-100 text-brand-700 text-xs px-2 py-1 rounded-full font-bold">ADMIN</div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-slate-600 select-none">Olá, {{ userName || 'Carregando...' }}</span>
+              <ChevronDown class="w-4 h-4 text-slate-400" />
+            </div>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-200 to-brand-100 flex items-center justify-center text-brand-700 font-bold border-2 border-white shadow-sm select-none">
+              {{ userInitial }}
+            </div>
+          </div>
+
+          <!-- Dropdown Overlay -->
+          <div v-if="isUserMenuOpen" class="fixed inset-0 z-40" @click="isUserMenuOpen = false"></div>
+          
+          <!-- Dropdown Menu -->
+          <div v-if="isUserMenuOpen" class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+            <NuxtLink to="/perfil" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
+              <User class="w-4 h-4 text-slate-400" />
+              Visualizar Perfil
+            </NuxtLink>
+            <div class="border-t border-slate-100 my-1"></div>
+            <button @click.stop="isUserMenuOpen = false; handleLogout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors font-medium text-left">
+              <LogOut class="w-4 h-4 text-rose-400" />
+              Sair
+            </button>
           </div>
         </div>
       </header>
