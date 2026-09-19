@@ -34,6 +34,9 @@ const fetchTradeItems = async () => {
       *,
       products (
         id, name, category, brand, color, collection, image_url
+      ),
+      inventory_entries (
+        expiration_date
       )
     `)
     .eq('status', 'active')
@@ -112,13 +115,24 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
-const getIntentLabel = (intent) => {
-  switch (intent) {
-    case 'doar': return { text: 'Doação', class: 'bg-brand-50 text-brand-700 border-brand-100' }
-    case 'trocar': return { text: 'Troca', class: 'bg-emerald-50 text-emerald-700 border-emerald-100' }
-    case 'vender': return { text: 'Venda', class: 'bg-sky-50 text-sky-700 border-sky-100' }
-    default: return { text: intent, class: 'bg-slate-50 text-slate-700 border-slate-100' }
-  }
+const formatMonthYear = (dateString) => {
+  if (!dateString) return '-'
+  const [year, month] = dateString.split('-')
+  return `${month}/${year}`
+}
+
+const getIntentLabels = (intentString) => {
+  if (!intentString) return []
+  const intents = intentString.split(',').map(i => i.trim())
+  
+  return intents.map(intent => {
+    switch (intent) {
+      case 'doar': return { text: 'Doação', class: 'bg-brand-50 text-brand-700 border-brand-100' }
+      case 'trocar': return { text: 'Troca', class: 'bg-emerald-50 text-emerald-700 border-emerald-100' }
+      case 'vender': return { text: 'Venda', class: 'bg-sky-50 text-sky-700 border-sky-100' }
+      default: return { text: intent, class: 'bg-slate-50 text-slate-700 border-slate-100' }
+    }
+  })
 }
 
 const requestTrade = async (item) => {
@@ -220,23 +234,26 @@ definePageMeta({
       </div>
 
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div v-for="item in paginatedItems" :key="item.id" class="bg-white/80 backdrop-blur-md border border-white rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all flex flex-col relative overflow-hidden group">
+        <div v-for="item in paginatedItems" :key="item.id" class="h-full bg-white/80 backdrop-blur-md border border-white rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all flex flex-col justify-between relative overflow-hidden group">
           
           <!-- Badges Topo -->
           <div class="absolute top-4 right-4 flex flex-col items-end gap-1 z-10">
-            <span class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-lg border shadow-sm" :class="getIntentLabel(item.intent).class">
-              {{ getIntentLabel(item.intent).text }}
-            </span>
             <span v-if="item.condition === 'novo'" class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-lg border shadow-sm bg-purple-50 text-purple-700 border-purple-100">
-              Novo
+              Produto Novo
+            </span>
+            <span v-else-if="item.condition === 'usado'" class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-lg border shadow-sm bg-amber-50 text-amber-700 border-amber-100">
+              Produto Usado
+            </span>
+            <span v-for="label in getIntentLabels(item.intent)" :key="label.text" class="px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold rounded-lg border shadow-sm" :class="label.class">
+              {{ label.text }}
             </span>
           </div>
 
-          <div class="flex flex-col items-center text-center gap-3 mb-5 mt-2">
+          <div class="flex flex-col items-center text-center gap-3 mb-5 mt-2 flex-1">
             <div v-if="item.products?.image_url" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden relative group/img">
               <img :src="item.products.image_url" alt="Foto" class="w-full h-full object-cover">
             </div>
-            <div v-else class="w-16 h-16 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0 text-brand-500 shadow-inner">
+            <div v-else class="w-20 h-20 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0 text-brand-500 shadow-inner">
               <PackageOpen class="w-7 h-7" />
             </div>
             
@@ -245,34 +262,36 @@ definePageMeta({
               <p class="text-xs text-slate-400 font-medium mt-1 tracking-wide">
                 <span v-if="item.products?.category">{{ item.products.category }} &bull; </span>{{ item.products?.brand }}
               </p>
+              <p v-if="item.inventory_entries?.expiration_date" class="text-xs text-slate-400 font-medium mt-0.5 tracking-wide">
+                Validade: {{ formatMonthYear(item.inventory_entries?.expiration_date) }}
+              </p>
             </div>
           </div>
 
           <div class="space-y-3 mt-auto pt-4 border-t border-slate-100">
             <!-- Usuário -->
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col items-center gap-1">
               <div class="flex items-center gap-2">
                 <div class="w-6 h-6 rounded-full bg-gradient-to-br from-brand-400 to-rose-400 text-white flex items-center justify-center text-xs font-bold shadow-sm shrink-0">
                   {{ item.profiles?.name?.charAt(0).toUpperCase() }}
                 </div>
                 <p class="text-sm font-bold text-slate-700 truncate">{{ item.profiles?.name }}</p>
               </div>
-              <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium pl-8">
+              <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                 <MapPin class="w-3.5 h-3.5 text-sky-400" />
                 {{ item.profiles?.city || 'Cidade desconhecida' }} - {{ item.profiles?.state || 'UF' }}
               </div>
             </div>
 
-            <!-- Qtd e Preço -->
-            <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-500 font-medium uppercase tracking-wider">Disp:</span>
-                <span class="font-bold text-rose-950 text-sm">{{ item.quantity }}x</span>
-              </div>
-              <div v-if="item.intent === 'vender' && item.price > 0" class="flex items-center gap-2">
-                <span class="text-xs text-slate-500 font-medium uppercase tracking-wider">Valor:</span>
-                <span class="font-bold text-emerald-600 text-sm">{{ formatCurrency(item.price) }}</span>
-              </div>
+            <div class="flex items-center justify-between text-sm pt-2 border-t border-slate-50">
+              <span class="text-slate-500 font-medium">Quantidade Disp.</span>
+              <span class="font-bold text-rose-950 bg-rose-50 px-2 py-0.5 rounded-lg text-xs border border-rose-100">{{ item.quantity }}x</span>
+            </div>
+            
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-slate-500 font-medium">Valor Total</span>
+              <span v-if="item.intent?.includes('vender') && item.price > 0" class="font-bold text-emerald-600">{{ formatCurrency(item.price) }}</span>
+              <span v-else class="font-bold text-slate-300">--</span>
             </div>
 
             <!-- Botão Ação -->

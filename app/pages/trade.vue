@@ -3,7 +3,8 @@ import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Grid, LayoutGr
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
-const { showConfirm, showAlert } = useDialog()
+const loggedInUserId = ref(null)
+const { showAlert, showConfirm } = useDialog()
 const entries = ref([])
 const products = ref([])
 const tradeRequests = ref([])
@@ -43,7 +44,11 @@ const fetchEntries = async () => {
       ),
       trade_items (
         id,
-        status
+        status,
+        quantity,
+        condition,
+        intent,
+        price
       )
     `)
     .order('created_at', { ascending: false })
@@ -98,6 +103,9 @@ const fetchTradeRequests = async () => {
     .or(`requester_id.eq.${currentUser.id},target_user_id.eq.${currentUser.id}`)
     .order('created_at', { ascending: false })
   
+  console.log('fetchTradeRequests data:', data)
+  console.log('fetchTradeRequests error:', error)
+  
   if (!error && data) {
     const userIds = new Set()
     data.forEach(r => { userIds.add(r.requester_id); userIds.add(r.target_user_id) })
@@ -112,6 +120,9 @@ const fetchTradeRequests = async () => {
       requester: profilesMap[r.requester_id],
       target: profilesMap[r.target_user_id]
     }))
+  } else if (error) {
+    console.error("Erro ao buscar solicitações:", error)
+    await showAlert('Erro de Consulta', 'Não foi possível carregar as solicitações: ' + error.message)
   }
   loadingRequests.value = false
 }
@@ -127,15 +138,21 @@ const updateRequestStatus = async (id, newStatus) => {
 }
 
 const incomingRequests = computed(() => {
-  const currentUserId = user.value?.id // Computed property re-evaluates
-  return tradeRequests.value.filter(r => r.target_user_id === currentUserId)
+  const currentUserId = loggedInUserId.value || user.value?.id
+  const filtered = tradeRequests.value.filter(r => r.target_user_id === currentUserId)
+  return filtered
 })
 const outgoingRequests = computed(() => {
-  const currentUserId = user.value?.id
+  const currentUserId = loggedInUserId.value || user.value?.id
   return tradeRequests.value.filter(r => r.requester_id === currentUserId)
 })
 
-onMounted(() => {
+onMounted(async () => {
+  const { data: authData } = await supabase.auth.getUser()
+  if (authData?.user) {
+    loggedInUserId.value = authData.user.id
+  }
+  
   fetchEntries()
   fetchProducts()
   fetchTradeRequests()
@@ -467,6 +484,9 @@ definePageMeta({
               <div>
                 <h3 class="font-bold text-rose-950 line-clamp-2 leading-snug" :class="viewMode === 'large' ? 'text-lg' : 'text-base'">{{ entry.products?.name || 'Produto Excluído' }}</h3>
                 <p class="text-xs text-slate-400 font-medium mt-1 tracking-wide">{{ entry.products?.brand }} {{ entry.products?.color ? `• ${entry.products.color}` : '' }}</p>
+                <p v-if="entry.expiration_date" class="text-xs text-slate-400 font-medium mt-0.5 tracking-wide">
+                  Validade: {{ formatMonthYear(entry.expiration_date) }}
+                </p>
               </div>
             </div>
 
@@ -475,17 +495,10 @@ definePageMeta({
                 <span class="text-slate-500 font-medium">Quantidade</span>
                 <span class="font-bold text-rose-950 bg-rose-50 px-2 py-0.5 rounded-lg text-xs border border-rose-100 shadow-sm">+{{ entry.quantity }}</span>
               </div>
-              
               <template v-if="viewMode === 'large'">
                 <div class="flex items-center justify-between text-sm">
                   <span class="text-slate-500 font-medium">Data Compra</span>
                   <span class="font-medium text-slate-700">{{ formatDate(entry.purchase_date) }}</span>
-                </div>
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-slate-500 font-medium">Validade</span>
-                  <span class="font-medium px-2 py-0.5 rounded-md" :class="entry.expiration_date && new Date(entry.expiration_date) < new Date(new Date().setMonth(new Date().getMonth() + 1)) ? 'text-orange-600 bg-orange-50 border border-orange-100' : 'text-slate-700'">
-                    {{ formatMonthYear(entry.expiration_date) }}
-                  </span>
                 </div>
                 <div class="pt-3 border-t border-brand-50 flex items-center justify-between">
                   <span class="text-sm font-medium text-slate-500">Custo Total</span>
@@ -583,7 +596,7 @@ definePageMeta({
     </div> <!-- End Requests View -->
 
     <ProductFormModal ref="productModal" @saved="fetchEntries" />
-    <TradeFormModal ref="tradeModal" />
+    <TradeFormModal ref="tradeModal" @saved="fetchEntries" />
 
     <!-- Modal de Imagem Expandida -->
     <div v-if="expandedImage" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-rose-950/60 backdrop-blur-md" @click="expandedImage = null">
