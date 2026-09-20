@@ -6,6 +6,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title, Filler)
 
 const supabase = useSupabaseClient()
+const user = useSupabaseUser()
 const totalItems = ref(0)
 const totalValue = ref(0)
 const expiries = ref([])
@@ -32,6 +33,15 @@ const colorPalette = ['#ec4899', '#f472b6', '#fbcfe8', '#db2777', '#9d174d', '#f
 
 onMounted(async () => {
   loading.value = true
+  
+  const { data: authData } = await supabase.auth.getUser()
+  const currentUserId = authData?.user?.id
+  
+  if (!currentUserId) {
+    loading.value = false
+    return
+  }
+
   const { data, error } = await supabase
     .from('inventory_entries')
     .select(`
@@ -43,6 +53,7 @@ onMounted(async () => {
       created_at,
       products (id, name, brand, color, image_url, favorite_level, is_used)
     `)
+    .eq('user_id', currentUserId)
   
   if (!error && data) {
     let items = 0

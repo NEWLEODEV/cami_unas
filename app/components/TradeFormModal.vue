@@ -64,10 +64,11 @@ const cancelOffer = async () => {
   if (!confirmed) return
   
   isCancelling.value = true
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('trade_items')
     .update({ status: 'cancelled' })
     .eq('id', activeTradeItem.value.id)
+    .select()
     
   isCancelling.value = false
   
@@ -77,9 +78,23 @@ const cancelOffer = async () => {
     return
   }
   
+  if (!data || data.length === 0) {
+    await showAlert('Não foi possível remover', 'Este item possui negociações em andamento (doação, troca ou venda). Por favor, cancele ou recuse as propostas antes de remover a oferta.')
+    return
+  }
+  
   isOpen.value = false
-  await showAlert('Sucesso', 'Oferta removida com sucesso!')
+  
+  // Atualiza o estado local para refletir na interface instantaneamente
+  if (entry.value && entry.value.trade_items) {
+    const itemToUpdate = entry.value.trade_items.find(t => t.id === activeTradeItem.value.id)
+    if (itemToUpdate) {
+      itemToUpdate.status = 'cancelled'
+    }
+  }
+  
   emit('saved', { entry: entry.value })
+  await showAlert('Sucesso', 'Oferta removida com sucesso!')
 }
 
 const submitTrade = async () => {
@@ -109,17 +124,22 @@ const submitTrade = async () => {
   }
 
   let error;
+  let newTradeItem = null;
   if (activeTradeItem.value) {
-    const { error: updateError } = await supabase
+    const { data, error: updateError } = await supabase
       .from('trade_items')
       .update(payload)
       .eq('id', activeTradeItem.value.id)
+      .select()
     error = updateError
+    if (data && data.length > 0) newTradeItem = data[0]
   } else {
-    const { error: insertError } = await supabase
+    const { data, error: insertError } = await supabase
       .from('trade_items')
       .insert(payload)
+      .select()
     error = insertError
+    if (data && data.length > 0) newTradeItem = data[0]
   }
 
   isSubmitting.value = false
@@ -131,8 +151,21 @@ const submitTrade = async () => {
   }
   
   isOpen.value = false
-  await showAlert('Sucesso!', activeTradeItem.value ? 'Alterações salvas com sucesso!' : 'Seu produto agora está visível para outras pessoas!')
+  
+  // Atualiza o estado local
+  if (entry.value) {
+    if (!entry.value.trade_items) entry.value.trade_items = []
+    
+    if (activeTradeItem.value && newTradeItem) {
+      const idx = entry.value.trade_items.findIndex(t => t.id === activeTradeItem.value.id)
+      if (idx !== -1) entry.value.trade_items[idx] = newTradeItem
+    } else if (newTradeItem) {
+      entry.value.trade_items.push(newTradeItem)
+    }
+  }
+
   emit('saved', { ...form.value, entry: entry.value })
+  await showAlert('Sucesso!', activeTradeItem.value ? 'Alterações salvas com sucesso!' : 'Seu produto agora está visível para outras pessoas!')
 }
 
 const formatMonthYear = (dateString) => {

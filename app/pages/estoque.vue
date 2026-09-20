@@ -2,6 +2,7 @@
 import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2, Grid, LayoutGrid, List, Heart, CheckCircle2 } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
+const user = useSupabaseUser()
 const { showConfirm, showAlert } = useDialog()
 const entries = ref([])
 const products = ref([])
@@ -28,6 +29,15 @@ const openEditModal = (entry) => productModal.value?.openEditModal(entry.product
 
 const fetchEntries = async () => {
   loading.value = true
+  
+  const { data: authData } = await supabase.auth.getUser()
+  const currentUserId = authData?.user?.id
+  
+  if (!currentUserId) {
+    loading.value = false
+    return
+  }
+
   const { data, error } = await supabase
     .from('inventory_entries')
     .select(`
@@ -45,6 +55,7 @@ const fetchEntries = async () => {
         is_used
       )
     `)
+    .eq('user_id', currentUserId)
     .order('created_at', { ascending: false })
   
   if (!error && data) {

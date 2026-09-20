@@ -25,7 +25,14 @@ const tradeModal = ref(null)
 const openNewModal = () => productModal.value?.openNewModal()
 
 const fetchEntries = async () => {
-  loading.value = true
+  if (entries.value.length === 0) loading.value = true
+  const currentUserId = user.value?.id || loggedInUserId.value
+
+  if (!currentUserId) {
+    loading.value = false
+    return
+  }
+
   const { data, error } = await supabase
     .from('inventory_entries')
     .select(`
@@ -51,6 +58,7 @@ const fetchEntries = async () => {
         price
       )
     `)
+    .eq('user_id', currentUserId)
     .order('created_at', { ascending: false })
   
   if (!error && data) {
@@ -547,8 +555,15 @@ definePageMeta({
                 <button @click="updateRequestStatus(req.id, 'accepted')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2"><Check class="w-4 h-4"/> Aceitar</button>
                 <button @click="updateRequestStatus(req.id, 'rejected')" class="px-4 py-2 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2"><X class="w-4 h-4"/> Recusar</button>
               </div>
-              <div v-else class="font-bold text-sm uppercase tracking-wider px-3 py-1 rounded-lg border" :class="req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : 'text-slate-500 border-slate-200 bg-slate-50'">
-                {{ req.status === 'accepted' ? 'Aceita' : 'Recusada' }}
+              <div v-else class="flex flex-col items-end gap-2">
+                <div class="font-bold text-sm uppercase tracking-wider px-3 py-1 rounded-lg border w-fit" :class="req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50')">
+                  {{ req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada')) }}
+                </div>
+                
+                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-2 mt-1">
+                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-xl font-bold text-xs shadow-sm transition-colors">Desistir da negociação</button>
+                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-xs shadow-sm transition-colors">A negociação foi concluída?</button>
+                </div>
               </div>
             </div>
           </div>
@@ -585,8 +600,15 @@ definePageMeta({
                 </div>
               </div>
               
-              <div class="font-bold text-sm uppercase tracking-wider px-3 py-1 rounded-lg border" :class="req.status === 'pending' ? 'text-orange-600 border-orange-200 bg-orange-50' : (req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : 'text-slate-500 border-slate-200 bg-slate-50')">
-                {{ req.status === 'pending' ? 'Aguardando' : (req.status === 'accepted' ? 'Aceita' : 'Recusada') }}
+              <div class="flex flex-col items-end gap-2">
+                <div class="font-bold text-sm uppercase tracking-wider px-3 py-1 rounded-lg border w-fit" :class="req.status === 'pending' ? 'text-orange-600 border-orange-200 bg-orange-50' : (req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50'))">
+                  {{ req.status === 'pending' ? 'Aguardando' : (req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada'))) }}
+                </div>
+                
+                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-2 mt-1">
+                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-xl font-bold text-xs shadow-sm transition-colors">Desistir da negociação</button>
+                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-xs shadow-sm transition-colors">A negociação foi concluída?</button>
+                </div>
               </div>
             </div>
           </div>
