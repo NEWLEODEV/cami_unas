@@ -1,5 +1,5 @@
 <script setup>
-import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2, Grid, LayoutGrid, List, Heart, CheckCircle2 } from 'lucide-vue-next'
+import { Search, Plus, X, ArrowDownToLine, Calendar, PackageOpen, Pencil, Trash2, Grid, LayoutGrid, List, Heart, CheckCircle2, Check } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
@@ -204,6 +204,15 @@ const toggleSelectAll = () => {
   }
 }
 
+const toggleSelection = (id) => {
+  const index = selectedEntries.value.indexOf(id)
+  if (index > -1) {
+    selectedEntries.value.splice(index, 1)
+  } else {
+    selectedEntries.value.push(id)
+  }
+}
+
 const deleteSelected = async () => {
   if (selectedEntries.value.length === 0) return
   
@@ -332,18 +341,19 @@ definePageMeta({
 
       <!-- Registrar Entrada -->
       <div class="flex items-center gap-3 shrink-0">
-        <button 
-          v-if="selectedEntries.length > 0" 
-          @click="deleteSelected" 
-          class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-5 py-2.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-sm text-sm font-bold h-[48px] border border-rose-200"
-        >
-          <Trash2 class="w-4 h-4" />
-          Excluir Selecionados ({{ selectedEntries.length }})
-        </button>
-
         <button @click="openNewModal" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-md shrink-0 text-sm font-bold h-[48px]">
           <Plus class="w-4 h-4" />
           Registrar Entrada
+        </button>
+
+        <button 
+          :disabled="selectedEntries.length === 0"
+          @click="deleteSelected" 
+          class="px-5 py-2.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 text-sm font-bold h-[48px] border"
+          :class="selectedEntries.length > 0 ? 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-200 shadow-sm cursor-pointer' : 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed opacity-70'"
+        >
+          <Trash2 class="w-4 h-4" />
+          Excluir Selecionados <span v-if="selectedEntries.length > 0">({{ selectedEntries.length }})</span>
         </button>
       </div>
     </div>
@@ -367,7 +377,13 @@ definePageMeta({
             <thead>
               <tr class="border-b border-brand-50/50">
                 <th class="py-5 px-6 font-semibold text-slate-400 text-sm uppercase tracking-wider w-12 text-center">
-                  <input type="checkbox" :checked="allSelected" @change="toggleSelectAll" class="rounded text-brand-500 focus:ring-brand-500 w-4 h-4 cursor-pointer" />
+                  <button 
+                    @click="toggleSelectAll"
+                    class="w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 border-2 mx-auto"
+                    :class="allSelected ? 'bg-brand-500 border-brand-500 text-white' : 'bg-white border-slate-300 text-transparent hover:border-brand-400'"
+                  >
+                    <Check class="w-3.5 h-3.5 stroke-[3]" />
+                  </button>
                 </th>
                 <th class="py-5 px-2 font-semibold text-slate-400 text-sm uppercase tracking-wider">Produto</th>
                 <th class="py-5 px-8 font-semibold text-slate-400 text-sm uppercase tracking-wider">Data de Compra</th>
@@ -381,7 +397,13 @@ definePageMeta({
             <tbody>
               <tr v-for="entry in filteredEntries" :key="entry.id" class="border-b border-brand-50/30 hover:bg-white transition-colors group" :class="{'bg-brand-50/30': selectedEntries.includes(entry.id)}">
                 <td class="py-5 px-6 text-center">
-                  <input type="checkbox" v-model="selectedEntries" :value="entry.id" class="rounded text-brand-500 focus:ring-brand-500 w-4 h-4 cursor-pointer" />
+                  <button 
+                    @click.stop="toggleSelection(entry.id)"
+                    class="w-5 h-5 rounded-full flex items-center justify-center transition-all duration-200 border-2 mx-auto"
+                    :class="selectedEntries.includes(entry.id) ? 'bg-brand-500 border-brand-500 text-white' : 'bg-white border-slate-300 text-transparent hover:border-brand-400'"
+                  >
+                    <Check class="w-3.5 h-3.5 stroke-[3]" />
+                  </button>
                 </td>
                 <td class="py-5 px-2">
                   <div class="flex items-center gap-2 mb-1">
@@ -432,9 +454,6 @@ definePageMeta({
                     <button @click="openEditModal(entry)" class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
                       <Pencil class="w-4 h-4" />
                     </button>
-                    <button @click="deleteEntry(entry.id)" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors tooltip-left" data-tooltip="Excluir">
-                      <Trash2 class="w-4 h-4" />
-                    </button>
                   </div>
                 </td>
               </tr>
@@ -446,18 +465,18 @@ definePageMeta({
         <div v-else class="grid gap-6" :class="viewMode === 'medium' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'">
           <div v-for="entry in filteredEntries" :key="entry.id" class="bg-white/80 backdrop-blur-md border rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden" :class="selectedEntries.includes(entry.id) ? 'border-brand-400 ring-2 ring-brand-100' : 'border-white'">
             
-            <!-- Checkbox de Seleção -->
-            <div class="absolute top-4 left-4 z-20" :class="!selectedEntries.includes(entry.id) ? 'opacity-0 group-hover:opacity-100 transition-opacity' : ''">
-              <input type="checkbox" v-model="selectedEntries" :value="entry.id" class="rounded text-brand-500 focus:ring-brand-500 w-5 h-5 cursor-pointer bg-white shadow-sm border-slate-300" />
-            </div>
-
-            <!-- Ações -->
-            <div class="absolute top-4 right-4 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-brand-50">
-              <button @click="openEditModal(entry)" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
-                <Pencil class="w-3.5 h-3.5" />
+            <!-- Checkbox de Seleção e Ações -->
+            <div class="absolute top-4 right-4 z-20 flex flex-col gap-2">
+              <button 
+                @click.stop="toggleSelection(entry.id)"
+                class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 border-2 mx-auto"
+                :class="selectedEntries.includes(entry.id) ? 'bg-brand-500 border-brand-500 text-white shadow-md' : 'bg-white/80 border-slate-200 text-transparent hover:border-brand-400 opacity-0 group-hover:opacity-100 shadow-sm backdrop-blur-sm'"
+              >
+                <Check class="w-3.5 h-3.5 stroke-[3]" />
               </button>
-              <button @click="deleteEntry(entry.id)" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors tooltip-left" data-tooltip="Excluir">
-                <Trash2 class="w-3.5 h-3.5" />
+
+              <button @click="openEditModal(entry)" class="w-7 h-7 bg-white/90 backdrop-blur-sm border border-brand-50 rounded-full flex items-center justify-center text-slate-400 hover:text-brand-600 hover:bg-brand-50 shadow-sm opacity-0 group-hover:opacity-100 transition-all tooltip-left mx-auto" data-tooltip="Editar">
+                <Pencil class="w-3.5 h-3.5" />
               </button>
             </div>
 

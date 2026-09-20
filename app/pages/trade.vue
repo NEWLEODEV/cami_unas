@@ -89,7 +89,7 @@ const toggleTradeStatus = (entry) => {
 
 
 const fetchTradeRequests = async () => {
-  loadingRequests.value = true
+  if (tradeRequests.value.length === 0) loadingRequests.value = true
   
   const { data: authData } = await supabase.auth.getUser()
   const currentUser = authData?.user
@@ -155,6 +155,8 @@ const outgoingRequests = computed(() => {
   return tradeRequests.value.filter(r => r.requester_id === currentUserId)
 })
 
+let tradeChannel = null
+
 onMounted(async () => {
   const { data: authData } = await supabase.auth.getUser()
   if (authData?.user) {
@@ -164,6 +166,24 @@ onMounted(async () => {
   fetchEntries()
   fetchProducts()
   fetchTradeRequests()
+  
+  // Realtime (WebSockets) - Atualiza automaticamente via Push do Servidor
+  tradeChannel = supabase.channel('trade-updates')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'trade_requests' },
+      () => fetchTradeRequests()
+    )
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'inventory_entries' },
+      () => fetchEntries()
+    )
+    .subscribe()
+})
+
+onUnmounted(() => {
+  if (tradeChannel) supabase.removeChannel(tradeChannel)
 })
 
 const formatDate = (dateString) => {
@@ -263,6 +283,8 @@ const filteredIncomingRequests = computed(() => {
   return result
 })
 
+const recentIncomingRequests = computed(() => filteredIncomingRequests.value.slice(0, 5))
+
 const filteredOutgoingRequests = computed(() => {
   let result = outgoingRequests.value
   
@@ -291,6 +313,8 @@ const filteredOutgoingRequests = computed(() => {
   
   return result
 })
+
+const recentOutgoingRequests = computed(() => filteredOutgoingRequests.value.slice(0, 5))
 
 definePageMeta({
   layout: false,
@@ -519,50 +543,55 @@ definePageMeta({
       </div>
     </div>
     </div> <!-- End Inventory View -->
-    <div v-else class="space-y-8 animate-in fade-in duration-300">
+    <div v-else class="grid grid-cols-1 xl:grid-cols-2 gap-8 animate-in fade-in duration-300 items-start">
       
       <!-- Recebidas -->
       <div class="bg-white/80 backdrop-blur-md rounded-[2rem] border border-white shadow-soft p-8">
-        <h3 class="text-lg font-bold text-rose-950 mb-6 flex items-center gap-2">
-          <ArrowDownToLine class="w-5 h-5 text-emerald-500" />
-          Propostas Recebidas
-        </h3>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+          <h3 class="text-lg font-bold text-rose-950 flex items-center gap-2">
+            <ArrowDownToLine class="w-5 h-5 text-emerald-500" />
+            Propostas Recebidas
+          </h3>
+          <NuxtLink to="/historico-trade?tab=recebidas" class="text-sm font-bold text-brand-500 hover:text-brand-600 transition-colors bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-xl text-center">
+            Clique aqui para visualizar todas as propostas.
+          </NuxtLink>
+        </div>
         
         <div v-if="loadingRequests" class="text-center text-slate-400 py-8">Carregando...</div>
-        <div v-else-if="filteredIncomingRequests.length === 0" class="text-center text-slate-400 py-8">Nenhuma proposta recebida.</div>
-        <div v-else class="space-y-4">
-          <div v-for="req in filteredIncomingRequests" :key="req.id" class="p-5 border rounded-2xl transition-colors" :class="req.status === 'pending' ? 'bg-orange-50/50 border-orange-100' : (req.status === 'accepted' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100 opacity-70')">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div class="flex items-center gap-4">
-                <div v-if="req.trade_items?.products?.image_url" class="w-16 h-16 rounded-xl bg-white shadow-sm shrink-0 overflow-hidden">
+        <div v-else-if="recentIncomingRequests.length === 0" class="text-center text-slate-400 py-8">Nenhuma proposta recebida.</div>
+        <div v-else class="space-y-2">
+          <div v-for="req in recentIncomingRequests" :key="req.id" class="p-3 border rounded-xl transition-colors" :class="req.status === 'pending' ? 'bg-orange-50/50 border-orange-100' : (req.status === 'accepted' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100 opacity-70')">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div v-if="req.trade_items?.products?.image_url" class="w-10 h-10 rounded-lg bg-white shadow-sm shrink-0 overflow-hidden">
                   <img :src="req.trade_items.products.image_url" class="w-full h-full object-cover" />
                 </div>
-                <div v-else class="w-16 h-16 rounded-xl bg-brand-50 shadow-sm shrink-0 flex items-center justify-center text-brand-400 border border-brand-100">
-                  <PackageOpen class="w-6 h-6" />
+                <div v-else class="w-10 h-10 rounded-lg bg-brand-50 shadow-sm shrink-0 flex items-center justify-center text-brand-400 border border-brand-100">
+                  <PackageOpen class="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 class="font-bold text-rose-950">{{ req.trade_items?.products?.name || 'Produto indisponível' }}</h4>
-                  <p class="text-sm text-slate-500">Solicitado por: <span class="font-bold">{{ req.requester?.name || 'Usuário' }}</span></p>
+                  <h4 class="font-bold text-sm text-rose-950 leading-tight">{{ req.trade_items?.products?.name || 'Produto indisponível' }}</h4>
+                  <p class="text-xs text-slate-500">Solicitado por: <span class="font-bold">{{ req.requester?.name || 'Usuário' }}</span></p>
                   
-                  <div v-if="req.status === 'accepted'" class="mt-2 flex items-center gap-2 text-sm font-bold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-lg w-fit">
-                    <Phone class="w-4 h-4" />
-                    WhatsApp: {{ req.requester?.phone || 'Não informado' }}
+                  <div v-if="req.status === 'accepted'" class="mt-1 flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-md w-fit">
+                    <Phone class="w-3 h-3" />
+                    {{ req.requester?.phone || 'Não informado' }}
                   </div>
                 </div>
               </div>
               
-              <div v-if="req.status === 'pending'" class="flex gap-2">
-                <button @click="updateRequestStatus(req.id, 'accepted')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2"><Check class="w-4 h-4"/> Aceitar</button>
-                <button @click="updateRequestStatus(req.id, 'rejected')" class="px-4 py-2 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl font-bold text-sm shadow-sm transition-colors flex items-center gap-2"><X class="w-4 h-4"/> Recusar</button>
+              <div v-if="req.status === 'pending'" class="flex gap-1.5 shrink-0">
+                <button @click="updateRequestStatus(req.id, 'accepted')" class="px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-xs shadow-sm transition-colors flex items-center gap-1.5"><Check class="w-3.5 h-3.5"/> Aceitar</button>
+                <button @click="updateRequestStatus(req.id, 'rejected')" class="px-2.5 py-1.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg font-bold text-xs shadow-sm transition-colors flex items-center gap-1.5"><X class="w-3.5 h-3.5"/> Recusar</button>
               </div>
-              <div v-else class="flex flex-col items-end gap-2">
-                <div class="font-bold text-sm uppercase tracking-wider px-3 py-1 rounded-lg border w-fit" :class="req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50')">
+              <div v-else class="flex flex-col sm:items-end gap-1.5 shrink-0">
+                <div class="font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md border w-fit" :class="req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50')">
                   {{ req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada')) }}
                 </div>
                 
-                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-2 mt-1">
-                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-xl font-bold text-xs shadow-sm transition-colors">Desistir da negociação</button>
-                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-xs shadow-sm transition-colors">A negociação foi concluída?</button>
+                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-1.5">
+                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-2 py-1 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg font-bold text-[10px] shadow-sm transition-colors">Desistir</button>
+                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold text-[10px] shadow-sm transition-colors">Concluir</button>
                 </div>
               </div>
             </div>
@@ -572,42 +601,47 @@ definePageMeta({
 
       <!-- Enviadas -->
       <div class="bg-white/80 backdrop-blur-md rounded-[2rem] border border-white shadow-soft p-8">
-        <h3 class="text-lg font-bold text-rose-950 mb-6 flex items-center gap-2">
-          <MessageCircle class="w-5 h-5 text-sky-500" />
-          Propostas Enviadas
-        </h3>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+          <h3 class="text-lg font-bold text-rose-950 flex items-center gap-2">
+            <MessageCircle class="w-5 h-5 text-sky-500" />
+            Propostas Enviadas
+          </h3>
+          <NuxtLink to="/historico-trade?tab=enviadas" class="text-sm font-bold text-brand-500 hover:text-brand-600 transition-colors bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-xl text-center">
+            Clique aqui para visualizar todas as propostas.
+          </NuxtLink>
+        </div>
         
         <div v-if="loadingRequests" class="text-center text-slate-400 py-8">Carregando...</div>
-        <div v-else-if="filteredOutgoingRequests.length === 0" class="text-center text-slate-400 py-8">Você ainda não enviou nenhuma proposta.</div>
-        <div v-else class="space-y-4">
-          <div v-for="req in filteredOutgoingRequests" :key="req.id" class="p-5 border rounded-2xl transition-colors" :class="req.status === 'pending' ? 'bg-orange-50/50 border-orange-100' : (req.status === 'accepted' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100 opacity-70')">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div class="flex items-center gap-4">
-                <div v-if="req.trade_items?.products?.image_url" class="w-16 h-16 rounded-xl bg-white shadow-sm shrink-0 overflow-hidden">
+        <div v-else-if="recentOutgoingRequests.length === 0" class="text-center text-slate-400 py-8">Você ainda não enviou nenhuma proposta.</div>
+        <div v-else class="space-y-2">
+          <div v-for="req in recentOutgoingRequests" :key="req.id" class="p-3 border rounded-xl transition-colors" :class="req.status === 'pending' ? 'bg-orange-50/50 border-orange-100' : (req.status === 'accepted' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-100 opacity-70')">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div v-if="req.trade_items?.products?.image_url" class="w-10 h-10 rounded-lg bg-white shadow-sm shrink-0 overflow-hidden">
                   <img :src="req.trade_items.products.image_url" class="w-full h-full object-cover" />
                 </div>
-                <div v-else class="w-16 h-16 rounded-xl bg-brand-50 shadow-sm shrink-0 flex items-center justify-center text-brand-400 border border-brand-100">
-                  <PackageOpen class="w-6 h-6" />
+                <div v-else class="w-10 h-10 rounded-lg bg-brand-50 shadow-sm shrink-0 flex items-center justify-center text-brand-400 border border-brand-100">
+                  <PackageOpen class="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 class="font-bold text-rose-950">{{ req.trade_items?.products?.name || 'Produto indisponível' }}</h4>
-                  <p class="text-sm text-slate-500">Enviada para: <span class="font-bold">{{ req.target?.name || 'Usuário' }}</span></p>
+                  <h4 class="font-bold text-sm text-rose-950 leading-tight">{{ req.trade_items?.products?.name || 'Produto indisponível' }}</h4>
+                  <p class="text-xs text-slate-500">Enviada para: <span class="font-bold">{{ req.target?.name || 'Usuário' }}</span></p>
                   
-                  <div v-if="req.status === 'accepted'" class="mt-2 flex items-center gap-2 text-sm font-bold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-lg w-fit">
-                    <Phone class="w-4 h-4" />
-                    WhatsApp: {{ req.target?.phone || 'Não informado' }}
+                  <div v-if="req.status === 'accepted'" class="mt-1 flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-md w-fit">
+                    <Phone class="w-3 h-3" />
+                    {{ req.target?.phone || 'Não informado' }}
                   </div>
                 </div>
               </div>
               
-              <div class="flex flex-col items-end gap-2">
-                <div class="font-bold text-sm uppercase tracking-wider px-3 py-1 rounded-lg border w-fit" :class="req.status === 'pending' ? 'text-orange-600 border-orange-200 bg-orange-50' : (req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50'))">
+              <div class="flex flex-col sm:items-end gap-1.5 shrink-0">
+                <div class="font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md border w-fit" :class="req.status === 'pending' ? 'text-orange-600 border-orange-200 bg-orange-50' : (req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50'))">
                   {{ req.status === 'pending' ? 'Aguardando' : (req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada'))) }}
                 </div>
                 
-                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-2 mt-1">
-                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-xl font-bold text-xs shadow-sm transition-colors">Desistir da negociação</button>
-                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-xs shadow-sm transition-colors">A negociação foi concluída?</button>
+                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-1.5">
+                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-2 py-1 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg font-bold text-[10px] shadow-sm transition-colors">Desistir</button>
+                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold text-[10px] shadow-sm transition-colors">Concluir</button>
                 </div>
               </div>
             </div>

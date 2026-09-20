@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { Search, MapPin, PackageOpen, Handshake, HeartHandshake, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Search, MapPin, PackageOpen, Handshake, HeartHandshake, ArrowLeft, ChevronLeft, ChevronRight, Check } from 'lucide-vue-next'
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
@@ -15,6 +15,8 @@ const searchCity = ref('')
 
 // Para controlar botões de "solicitando..."
 const requestingIds = ref([])
+// Para manter botões em estado de "solicitado"
+const requestedIds = ref([])
 
 const fetchTradeItems = async () => {
   loading.value = true
@@ -154,6 +156,7 @@ const requestTrade = async (item) => {
   if (error) {
     await showAlert('Erro', 'Não foi possível enviar a solicitação: ' + error.message)
   } else {
+    requestedIds.value.push(item.id)
     await showAlert('Sucesso!', 'Solicitação enviada! Aguarde a resposta do outro usuário.')
   }
 }
@@ -281,12 +284,14 @@ definePageMeta({
             <!-- Botão Ação -->
             <button 
               @click="requestTrade(item)" 
-              :disabled="requestingIds.includes(item.id)"
-              class="w-full mt-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-2 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all font-bold text-[13px] whitespace-nowrap shadow-sm disabled:opacity-50"
+              :disabled="requestingIds.includes(item.id) || requestedIds.includes(item.id)"
+              class="w-full mt-2 px-2 py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all font-bold text-[13px] whitespace-nowrap shadow-sm disabled:opacity-50"
+              :class="requestedIds.includes(item.id) ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white'"
             >
-              <HeartHandshake v-if="!requestingIds.includes(item.id)" class="w-4 h-4 shrink-0" />
-              <span v-else class="w-4 h-4 shrink-0 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-              {{ requestingIds.includes(item.id) ? 'Enviando...' : 'Solicitar Negociação' }}
+              <HeartHandshake v-if="!requestingIds.includes(item.id) && !requestedIds.includes(item.id)" class="w-4 h-4 shrink-0" />
+              <Check v-else-if="requestedIds.includes(item.id)" class="w-4 h-4 shrink-0" />
+              <span v-else class="w-4 h-4 shrink-0 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+              {{ requestedIds.includes(item.id) ? 'Solicitado! Aguardando...' : (requestingIds.includes(item.id) ? 'Enviando...' : 'Solicitar Negociação') }}
             </button>
           </div>
 
