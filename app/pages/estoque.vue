@@ -243,31 +243,31 @@ definePageMeta({
     <template #header-left>
       <p class="text-lg truncate">
         <span class="text-slate-700 font-bold">Meu Acervo de Beleza</span>
-        <span class="text-slate-500 font-medium ml-1">- Aqui você organiza todos os seus produtos, como esmaltes, bases, batons e o que mais você amar.</span>
+        <span class="text-slate-500 font-medium ml-1 hidden sm:inline">- Aqui você organiza todos os seus produtos, como esmaltes, bases, batons e o que mais você amar.</span>
       </p>
     </template>
 
     <div class="space-y-6">
 
-
-    <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative -mt-4 lg:-mt-6">
+    <!-- Sticky Header Wrapper para Estoque -->
+    <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center gap-4 transition-all">
       <!-- Barra de Busca -->
-      <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
-        <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
-          <Search class="w-5 h-5 text-brand-400" />
+      <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white flex items-center gap-2">
+        <div class="w-7 h-7 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
+          <Search class="w-3.5 h-3.5 text-brand-400" />
         </div>
         <input 
           v-model="searchQuery" 
           type="text" 
           placeholder="Buscar por produto, marca, cor..." 
-          class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0"
+          class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 text-sm px-1 min-w-0"
         >
       </div>
 
       <!-- Filtros na mesma linha -->
-      <div class="flex flex-nowrap overflow-x-auto items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-full shadow-sm border border-white shrink-0" style="scrollbar-width: none; -ms-overflow-style: none;">
+      <div class="flex flex-nowrap overflow-x-auto items-center gap-3 bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white shrink-0" style="scrollbar-width: none; -ms-overflow-style: none;">
         <div class="flex items-center gap-2 shrink-0">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Marca</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Marca</span>
           <CustomSelect 
             v-model="filterBrand" 
             :options="uniqueEntryBrands"
@@ -276,22 +276,10 @@ definePageMeta({
           />
         </div>
         
-        <div class="w-px h-5 bg-slate-200 shrink-0"></div>
+        <div class="w-px h-4 bg-slate-200 shrink-0"></div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Coleção</span>
-          <CustomSelect 
-            v-model="filterCollection" 
-            :options="uniqueCollections"
-            placeholder="Todas"
-            variant="ghost"
-          />
-        </div>
-
-        <div class="w-px h-5 bg-slate-200 shrink-0"></div>
-
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Favoritos</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Favoritos</span>
           <CustomSelect 
             v-model="filterFavoriteLevel" 
             :options="favoriteOptions"
@@ -326,22 +314,22 @@ definePageMeta({
       </div>
 
       <!-- Controles de Visualização -->
-      <div class="bg-white/80 backdrop-blur-md p-1.5 rounded-full shadow-sm border border-white flex items-center gap-1 shrink-0 hidden sm:flex">
-        <button @click="viewMode = 'large'" :class="viewMode === 'large' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all tooltip-bottom" data-tooltip="Ícones grandes">
-          <LayoutGrid class="w-5 h-5" />
+      <div class="bg-white/80 backdrop-blur-md p-1 rounded-full shadow-sm border border-white flex items-center gap-1 shrink-0 hidden sm:flex">
+        <button @click="viewMode = 'large'" :class="viewMode === 'large' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-1.5 rounded-full transition-all tooltip-bottom" data-tooltip="Ícones grandes">
+          <LayoutGrid class="w-4 h-4" />
         </button>
-        <button @click="viewMode = 'medium'" :class="viewMode === 'medium' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all tooltip-bottom" data-tooltip="Ícones médios">
-          <Grid class="w-5 h-5" />
+        <button @click="viewMode = 'medium'" :class="viewMode === 'medium' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-1.5 rounded-full transition-all tooltip-bottom" data-tooltip="Ícones médios">
+          <Grid class="w-4 h-4" />
         </button>
         <div class="w-px h-6 bg-slate-200 mx-1"></div>
-        <button @click="viewMode = 'details'" :class="viewMode === 'details' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-2 rounded-full transition-all tooltip-bottom" data-tooltip="Detalhes">
-          <List class="w-5 h-5" />
+        <button @click="viewMode = 'details'" :class="viewMode === 'details' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-brand-500 hover:bg-slate-50/50'" class="p-1.5 rounded-full transition-all tooltip-bottom" data-tooltip="Detalhes">
+          <List class="w-4 h-4" />
         </button>
       </div>
 
       <!-- Registrar Entrada -->
       <div class="flex items-center gap-3 shrink-0">
-        <button @click="openNewModal" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-md shrink-0 text-sm font-bold h-[48px]">
+        <button @click="openNewModal" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 hover:-translate-y-0.5 text-white px-4 py-1.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow-md shrink-0 text-sm font-bold">
           <Plus class="w-4 h-4" />
           Registrar Entrada
         </button>
@@ -349,7 +337,7 @@ definePageMeta({
         <button 
           :disabled="selectedEntries.length === 0"
           @click="deleteSelected" 
-          class="px-5 py-2.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 text-sm font-bold h-[48px] border"
+          class="px-4 py-1.5 rounded-full flex items-center justify-center gap-2 transition-all duration-300 text-sm font-bold border"
           :class="selectedEntries.length > 0 ? 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-200 shadow-sm cursor-pointer' : 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed opacity-70'"
         >
           <Trash2 class="w-4 h-4" />
@@ -357,6 +345,7 @@ definePageMeta({
         </button>
       </div>
     </div>
+
 
     <!-- Lista de Entradas -->
     <div :class="viewMode === 'details' ? 'bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft overflow-hidden border border-white' : ''">

@@ -96,8 +96,8 @@ definePageMeta({
   <NuxtLayout name="default">
     <template #header-left>
       <p class="text-lg truncate">
-        <span class="text-slate-700 font-bold">Dia de comprinhas? Que delícia!</span>
-        <span class="text-slate-500 font-medium ml-1">- Aqui separei meus achados favoritos: tudo testado e escolhido a dedo pra você.</span>
+        <span class="text-slate-700 font-bold">Shopping Recomenda</span>
+        <span class="text-slate-500 font-medium ml-1 hidden sm:inline">- Os produtos favoritos da Camis selecionados para você.</span>
       </p>
     </template>
 
@@ -122,24 +122,24 @@ definePageMeta({
     <div v-else class="space-y-8">
       
       <!-- Filters and Search -->
-      <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full z-20 relative -mt-4 lg:-mt-6">
+      <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center gap-4 transition-all">
         <!-- Barra de Busca -->
-        <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm border border-white flex items-center gap-3">
-          <div class="w-10 h-10 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
-            <Search class="w-5 h-5 text-brand-400" />
+        <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white flex items-center gap-2">
+          <div class="w-7 h-7 bg-brand-50 rounded-full flex items-center justify-center shrink-0">
+            <Search class="w-3.5 h-3.5 text-brand-400" />
           </div>
           <input 
             v-model="searchQuery" 
             type="text" 
             placeholder="Buscar recomendações..." 
-            class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 font-medium px-2 min-w-0"
+            class="flex-1 bg-transparent border-none focus:outline-none text-rose-950 placeholder-slate-400 text-sm px-1 min-w-0"
           >
         </div>
 
         <!-- Categoria Dropdown -->
-        <div class="flex items-center gap-3 bg-white/80 backdrop-blur-md p-2.5 px-4 rounded-full shadow-sm border border-white shrink-0">
+        <div class="flex items-center gap-3 bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white shrink-0">
           <div class="flex items-center gap-2 shrink-0 min-w-[200px]">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Categoria</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Categoria</span>
             <CustomSelect 
               v-model="selectedCategoryId" 
               :options="categoryOptions"
@@ -153,10 +153,13 @@ definePageMeta({
         <button 
           @click="showWishlistOnly = !showWishlistOnly"
           :class="showWishlistOnly ? 'bg-rose-50 text-rose-600 border-rose-200 shadow-sm' : 'bg-white/80 text-slate-500 border-white hover:bg-white hover:text-rose-500 shadow-sm'"
-          class="flex items-center gap-2 px-4 py-2.5 rounded-full border transition-all shrink-0 font-bold text-sm backdrop-blur-md"
+          class="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all shrink-0 font-bold text-sm backdrop-blur-md"
         >
           <Heart class="w-4 h-4" :class="{'fill-current': showWishlistOnly}" />
-          Desejos
+          Lista de Desejos
+          <span v-if="(wishlistIds || []).length > 0" class="flex items-center justify-center w-5 h-5 bg-rose-500 text-white rounded-full text-[10px] ml-1 shrink-0">
+            {{ (wishlistIds || []).length }}
+          </span>
         </button>
       </div>
 

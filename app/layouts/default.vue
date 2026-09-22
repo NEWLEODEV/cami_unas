@@ -165,20 +165,13 @@ const handleLogout = async () => {
           <Phone class="w-4 h-4" />
           Entre em Contato
         </NuxtLink>
-
-        <div class="pt-1 mt-1 border-t border-brand-50">
-          <button @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors font-semibold text-sm shadow-sm border border-rose-100/50">
-            <LogOut class="w-4 h-4" />
-            Sair
-          </button>
-        </div>
       </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden min-w-0 pb-20 md:pb-0">
       <!-- Header -->
-      <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 shrink-0 bg-white/50 md:bg-transparent backdrop-blur-md sticky top-0 z-30 md:static">
+      <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 shrink-0 bg-white/50 md:bg-transparent backdrop-blur-md sticky top-0 z-50 md:relative">
         <!-- Logo Mobile -->
         <div class="md:hidden">
           <NuxtLink to="/" class="block">
@@ -218,7 +211,7 @@ const handleLogout = async () => {
                 <Bell class="w-4 h-4 text-slate-400" />
                 Solicitações
               </div>
-              <span v-if="pendingRequestsCount > 0" class="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ pendingRequestsCount }}</span>
+              <span v-if="pendingRequestsCount > 0" class="w-5 h-5 flex items-center justify-center bg-rose-500 text-white text-[10px] font-bold rounded-full shrink-0">{{ pendingRequestsCount }}</span>
             </NuxtLink>
             <NuxtLink to="/perfil" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
               <User class="w-4 h-4 text-slate-400" />
