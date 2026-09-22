@@ -120,19 +120,19 @@ const handleLogout = async () => {
       </div>
       
       <nav class="px-6 pt-4 pb-2 space-y-0.5">
-        <NuxtLink to="/dashboard" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/dashboard" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white hover:from-brand-100 hover:to-brand-50 !text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <LayoutDashboard class="w-4 h-4" />
           Dashboard
         </NuxtLink>
-         <NuxtLink to="/estoque" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+         <NuxtLink to="/estoque" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white hover:from-brand-100 hover:to-brand-50 !text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Droplet class="w-4 h-4" />
           Minha Coleção
         </NuxtLink>
-        <NuxtLink to="/trade" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/trade" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white hover:from-brand-100 hover:to-brand-50 !text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <ArrowRightLeft class="w-4 h-4" />
           Trade
         </NuxtLink>
-        <NuxtLink to="/shopping" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/shopping" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white hover:from-brand-100 hover:to-brand-50 !text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <ShoppingBag class="w-4 h-4" />
           Shopping
         </NuxtLink>
@@ -143,7 +143,7 @@ const handleLogout = async () => {
       </div>
 
       <nav class="px-6 pt-2 pb-2">
-        <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white hover:from-brand-100 hover:to-brand-50 !text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Info class="w-4 h-4" />
           Sobre
         </NuxtLink>
@@ -161,7 +161,7 @@ const handleLogout = async () => {
           <Instagram class="w-4 h-4" />
           no Instagram
         </a>
-        <NuxtLink to="/contatos" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white text-brand-600 font-semibold shadow-sm border border-brand-100/50">
+        <NuxtLink to="/contatos" class="flex items-center gap-3 px-4 py-2 text-sm rounded-xl text-slate-500 hover:bg-brand-50 hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300" active-class="bg-gradient-to-r from-brand-50 to-white hover:from-brand-100 hover:to-brand-50 !text-brand-600 font-semibold shadow-sm border border-brand-100/50">
           <Phone class="w-4 h-4" />
           Entre em Contato
         </NuxtLink>
