@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-vue-next'
 
 const slides = [
   '/carousel/Ola.png',
@@ -10,6 +10,7 @@ const slides = [
 ]
 
 const currentSlide = ref(0)
+const isPlaying = ref(true)
 let timer = null
 
 const nextSlide = () => {
@@ -25,11 +26,25 @@ const goToSlide = (index) => {
 }
 
 const startAutoPlay = () => {
+  stopAutoPlay()
   timer = setInterval(nextSlide, 5000)
+  isPlaying.value = true
 }
 
 const stopAutoPlay = () => {
-  if (timer) clearInterval(timer)
+  if (timer) {
+    clearInterval(timer)
+    timer = null
+  }
+  isPlaying.value = false
+}
+
+const togglePlay = () => {
+  if (isPlaying.value) {
+    stopAutoPlay()
+  } else {
+    startAutoPlay()
+  }
 }
 
 onMounted(() => {
@@ -65,8 +80,6 @@ definePageMeta({
       <!-- Carrossel ocupando o espaço do card -->
       <div 
         class="flex-1 relative w-full rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md group"
-        @mouseenter="stopAutoPlay" 
-        @mouseleave="startAutoPlay"
       >
         <!-- Slides -->
         <div 
@@ -86,15 +99,26 @@ definePageMeta({
           <ChevronRight class="w-6 h-6 mr-[-2px]" />
         </button>
         
-        <!-- Indicadores (Bolinhas) -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3">
-          <button 
-            v-for="(_, index) in slides" 
-            :key="'dot-'+index"
-            @click="goToSlide(index)"
-            class="h-2.5 rounded-full transition-all duration-500 shadow-sm"
-            :class="currentSlide === index ? 'bg-brand-500 w-8' : 'bg-white/80 hover:bg-white w-2.5'"
-          ></button>
+        <!-- Controles de Reprodução e Indicadores -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/60 backdrop-blur-md px-5 py-2.5 rounded-full shadow-sm border border-white/50">
+          <!-- Play / Pause -->
+          <button @click="togglePlay" class="text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center hover:scale-110" :title="isPlaying ? 'Pausar' : 'Reproduzir'">
+            <Pause v-if="isPlaying" class="w-4 h-4 fill-current" />
+            <Play v-else class="w-4 h-4 fill-current" />
+          </button>
+          
+          <div class="w-px h-4 bg-brand-200"></div>
+
+          <!-- Indicadores (Bolinhas) -->
+          <div class="flex items-center gap-3">
+            <button 
+              v-for="(_, index) in slides" 
+              :key="'dot-'+index"
+              @click="goToSlide(index); stopAutoPlay()"
+              class="h-2.5 rounded-full transition-all duration-500 shadow-sm"
+              :class="currentSlide === index ? 'bg-brand-500 w-8' : 'bg-white hover:bg-brand-100 w-2.5'"
+            ></button>
+          </div>
         </div>
       </div>
 
