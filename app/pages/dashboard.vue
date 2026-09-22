@@ -258,7 +258,7 @@ definePageMeta({
 <template>
   <NuxtLayout name="default">
     <template #header-left>
-      <p class="text-lg truncate">
+      <p class="text-sm truncate">
         <span class="text-slate-700 font-bold">Painel Inteligente</span>
         <span class="text-slate-500 font-medium ml-1">- Tenha uma visão completa e super simples de toda a sua coleção.</span>
       </p>

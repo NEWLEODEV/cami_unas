@@ -241,7 +241,7 @@ definePageMeta({
 <template>
   <NuxtLayout name="default">
     <template #header-left>
-      <p class="text-lg truncate">
+      <p class="text-sm truncate">
         <span class="text-slate-700 font-bold">Meu Acervo de Beleza</span>
         <span class="text-slate-500 font-medium ml-1 hidden sm:inline">- Aqui você organiza todos os seus produtos, como esmaltes, bases, batons e o que mais você amar.</span>
       </p>

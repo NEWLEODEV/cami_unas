@@ -339,7 +339,7 @@ definePageMeta({
 <template>
   <NuxtLayout name="default">
     <template #header-left>
-      <p class="text-lg truncate">
+      <p class="text-sm truncate">
         <span class="text-slate-700 font-bold">Trade</span>
         <span class="text-slate-500 font-medium ml-1 hidden sm:inline">- Aqui você gerencia suas trocas, desapegos e negociações de produtos.</span>
       </p>
