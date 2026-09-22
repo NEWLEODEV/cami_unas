@@ -161,6 +161,33 @@ const requestTrade = async (item) => {
   }
 }
 
+const cancelRequest = async (item) => {
+  const confirmed = await showConfirm(
+    'Cancelar Solicitação', 
+    'Tem certeza que deseja cancelar esta solicitação?'
+  )
+  
+  if (!confirmed) return
+
+  const { data: authData } = await supabase.auth.getUser()
+  const currentUser = authData?.user
+  if (!currentUser) return
+
+  const { error } = await supabase
+    .from('trade_requests')
+    .update({ status: 'cancelled' })
+    .eq('trade_item_id', item.id)
+    .eq('requester_id', currentUser.id)
+    .eq('status', 'pending')
+
+  if (!error) {
+    requestedIds.value = requestedIds.value.filter(id => id !== item.id)
+    await showAlert('Cancelado', 'Sua solicitação foi cancelada com sucesso.')
+  } else {
+    await showAlert('Erro', 'Não foi possível cancelar: ' + error.message)
+  }
+}
+
 definePageMeta({
   layout: false,
   middleware: 'auth'
@@ -292,6 +319,14 @@ definePageMeta({
               <Check v-else-if="requestedIds.includes(item.id)" class="w-4 h-4 shrink-0" />
               <span v-else class="w-4 h-4 shrink-0 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
               {{ requestedIds.includes(item.id) ? 'Solicitado! Aguardando...' : (requestingIds.includes(item.id) ? 'Enviando...' : 'Solicitar Negociação') }}
+            </button>
+            
+            <button 
+              v-if="requestedIds.includes(item.id)"
+              @click="cancelRequest(item)"
+              class="w-full mt-2 text-center text-[11px] font-bold text-slate-400 hover:text-rose-500 transition-colors underline-offset-2 hover:underline"
+            >
+              Cancelar solicitação
             </button>
           </div>
 

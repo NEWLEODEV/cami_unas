@@ -11,6 +11,20 @@ const route = useRoute()
 const tradeRequests = ref([])
 const loading = ref(true)
 const loggedInUserId = ref(null)
+const completeModal = ref(null)
+
+const openCompleteModal = (req) => {
+  completeModal.value?.openModal(req)
+}
+
+const isWithinEditPeriod = (req) => {
+  if (!req.completed_at) return false
+  const completedDate = new Date(req.completed_at)
+  const now = new Date()
+  const diffTime = now.getTime() - completedDate.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays <= 7
+}
 
 const activeTab = ref(route.query.tab || 'todas')
 
@@ -115,7 +129,7 @@ const getStatusConfig = (status, isIncoming) => {
     case 'accepted': 
       return { label: 'Aceita (Em andamento)', icon: CheckCircle2, class: 'bg-emerald-50 text-emerald-600 border-emerald-200' }
     case 'completed': 
-      return { label: 'Concluída', icon: Check, class: 'bg-brand-50 text-brand-600 border-brand-200' }
+      return { label: 'Concluída', icon: Check, class: 'bg-sky-50 text-sky-600 border-sky-200' }
     case 'cancelled': 
       return { label: 'Cancelada', icon: Ban, class: 'bg-slate-50 text-slate-500 border-slate-200' }
     case 'rejected': 
@@ -145,7 +159,7 @@ definePageMeta({
       </div>
     </template>
 
-    <div class="space-y-6 max-w-5xl mx-auto">
+    <div class="space-y-6">
       
       <!-- Tabs -->
       <div class="flex gap-2 border-b border-brand-100/50 pb-4">
@@ -180,8 +194,8 @@ definePageMeta({
         <div v-if="loading" class="text-center text-slate-400 py-12 font-medium">Carregando histórico...</div>
         <div v-else-if="filteredRequests.length === 0" class="text-center text-slate-400 py-12 font-medium">Nenhum registro encontrado.</div>
         
-        <div v-else class="divide-y divide-slate-100">
-          <div v-for="req in filteredRequests" :key="req.id" class="p-5 sm:p-6 hover:bg-slate-50/50 transition-colors">
+        <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+          <div v-for="req in filteredRequests" :key="req.id" class="p-5 sm:p-6 border border-slate-100 rounded-2xl bg-white/40 hover:bg-white hover:border-brand-200 hover:shadow-md transition-all">
             
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
               
@@ -228,10 +242,10 @@ definePageMeta({
                     <button @click="updateRequestStatus(req.id, 'rejected')" class="px-3 py-1.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl font-bold text-xs shadow-sm transition-colors flex items-center gap-1.5"><X class="w-3.5 h-3.5"/> Recusar</button>
                   </template>
                   
-                  <!-- Se já foi aceita -->
-                  <template v-if="req.status === 'accepted'">
-                    <button @click="updateRequestStatus(req.id, 'completed')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-xs shadow-sm transition-colors">Concluir</button>
-                    <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-xl font-bold text-xs shadow-sm transition-colors">Desistir</button>
+                  <!-- Se já foi aceita ou se está concluída e dentro do prazo -->
+                  <template v-if="req.status === 'accepted' || (req.status === 'completed' && isWithinEditPeriod(req))">
+                    <button v-if="req.status === 'accepted'" @click="updateRequestStatus(req.id, 'cancelled')" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-xl font-bold text-xs shadow-sm transition-colors">Desistir</button>
+                    <button @click="openCompleteModal(req)" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold text-xs shadow-sm transition-colors">{{ req.status === 'completed' ? 'Editar Conclusão' : 'Concluir' }}</button>
                   </template>
                   
                 </div>
@@ -243,6 +257,7 @@ definePageMeta({
         </div>
       </div>
 
+      <TradeCompleteModal ref="completeModal" @saved="fetchTradeRequests" />
     </div>
   </NuxtLayout>
 </template>

@@ -1,26 +1,58 @@
 <script setup>
-import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info, ArrowRightLeft, User, UserCog, ChevronDown } from 'lucide-vue-next'
-import { ref, onMounted, computed } from 'vue'
+import { LayoutDashboard, Package, Droplet, LogOut, LogIn, Instagram, Phone, PlaySquare, ShoppingBag, Settings, Info, ArrowRightLeft, User, UserCog, ChevronDown, Bell } from 'lucide-vue-next'
+import { ref, onMounted, computed, onUnmounted, watchEffect } from 'vue'
 
 const supabase = useSupabaseClient()
-const user = useSupabaseUser()
 const userName = ref('')
 const isAdmin = ref(false)
 const isUserMenuOpen = ref(false)
+const pendingRequestsCount = ref(0)
+let notificationChannel = null
+
+let authStateListener = null
 
 onMounted(async () => {
-  if (user.value) {
-    // Tenta pegar o nome do perfil no banco
+  const { data: authData } = await supabase.auth.getUser()
+  const currentUser = authData?.user
+  
+  if (currentUser) {
+    // Buscar Notificações
+    const fetchPendingRequestsCount = async () => {
+      const { data, error } = await supabase
+        .from('trade_requests')
+        .select('id')
+        .eq('target_user_id', currentUser.id)
+        .eq('status', 'pending')
+        
+      if (!error && data) {
+        pendingRequestsCount.value = data.length
+      }
+    }
+    
+    await fetchPendingRequestsCount()
+    
+    if (!notificationChannel) {
+      notificationChannel = supabase.channel('notification-updates')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'trade_requests', filter: `target_user_id=eq.${currentUser.id}` },
+          () => fetchPendingRequestsCount()
+        )
+        .subscribe()
+    }
+
+    // Buscar Perfil
     const { data } = await supabase
       .from('profiles')
       .select('name, is_admin')
-      .eq('id', user.value.id)
+      .eq('id', currentUser.id)
       .single()
       
-    let fullName = data?.name || user.value.user_metadata?.name
+    let fullName = data?.name || currentUser.user_metadata?.name
     
-    const userEmail = (user.value.email || '').trim().toLowerCase()
+    const userEmail = (currentUser.email || '').trim().toLowerCase()
     const isOwner = userEmail === 'camilatavares.arq@gmail.com'
+
     
     if (data) {
       isAdmin.value = data.is_admin === true || isOwner
@@ -60,6 +92,10 @@ onMounted(async () => {
   } else {
     userName.value = 'Visitante'
   }
+})
+
+onUnmounted(() => {
+  if (notificationChannel) supabase.removeChannel(notificationChannel)
 })
 
 const userInitial = computed(() => {
@@ -131,14 +167,10 @@ const handleLogout = async () => {
         </NuxtLink>
 
         <div class="pt-1 mt-1 border-t border-brand-50">
-          <button v-if="user" @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors font-semibold text-sm shadow-sm border border-rose-100/50">
+          <button @click="handleLogout" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors font-semibold text-sm shadow-sm border border-rose-100/50">
             <LogOut class="w-4 h-4" />
             Sair
           </button>
-          <NuxtLink v-else to="/login" class="w-full flex items-center justify-center gap-3 px-4 py-2 rounded-2xl bg-brand-50 text-brand-600 hover:bg-brand-100 hover:text-brand-700 transition-colors font-semibold text-sm shadow-sm border border-brand-100/50">
-            <LogIn class="w-4 h-4" />
-            Entrar
-          </NuxtLink>
         </div>
       </div>
     </aside>
@@ -170,8 +202,9 @@ const handleLogout = async () => {
               <span class="text-sm font-medium text-slate-600 select-none">Olá, {{ userName || 'Carregando...' }}</span>
               <ChevronDown class="w-4 h-4 text-slate-400" />
             </div>
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-200 to-brand-100 flex items-center justify-center text-brand-700 font-bold border-2 border-white shadow-sm select-none">
+            <div class="relative w-10 h-10 rounded-full bg-gradient-to-br from-brand-200 to-brand-100 flex items-center justify-center text-brand-700 font-bold border-2 border-white shadow-sm select-none">
               {{ userInitial }}
+              <div v-if="pendingRequestsCount > 0" class="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm text-[10px] font-bold">!</div>
             </div>
           </div>
 
@@ -180,6 +213,13 @@ const handleLogout = async () => {
           
           <!-- Dropdown Menu -->
           <div v-if="isUserMenuOpen" class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+            <NuxtLink to="/trade" class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
+              <div class="flex items-center gap-3">
+                <Bell class="w-4 h-4 text-slate-400" />
+                Solicitações
+              </div>
+              <span v-if="pendingRequestsCount > 0" class="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ pendingRequestsCount }}</span>
+            </NuxtLink>
             <NuxtLink to="/perfil" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
               <User class="w-4 h-4 text-slate-400" />
               Visualizar Perfil
@@ -217,14 +257,10 @@ const handleLogout = async () => {
         <ShoppingBag class="w-6 h-6" />
         <span class="text-[10px] font-medium">Shopping</span>
       </NuxtLink>
-      <button v-if="user" @click="handleLogout" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-rose-600">
+      <button @click="handleLogout" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-rose-600">
         <LogOut class="w-6 h-6" />
         <span class="text-[10px] font-medium">Sair</span>
       </button>
-      <NuxtLink v-else to="/login" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-brand-600">
-        <LogIn class="w-6 h-6" />
-        <span class="text-[10px] font-medium">Entrar</span>
-      </NuxtLink>
     </nav>
 
     <AppDialog />

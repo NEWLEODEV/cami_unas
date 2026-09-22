@@ -599,7 +599,7 @@ definePageMeta({
                 <button @click="updateRequestStatus(req.id, 'rejected')" class="px-2.5 py-1.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg font-bold text-xs shadow-sm transition-colors flex items-center gap-1.5"><X class="w-3.5 h-3.5"/> Recusar</button>
               </div>
               <div v-else class="flex flex-col sm:items-end gap-1.5 shrink-0">
-                <div class="font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md border w-fit" :class="req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50')">
+                <div class="font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md border w-fit" :class="req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-sky-600 border-sky-200 bg-sky-50' : 'text-slate-500 border-slate-200 bg-slate-50')">
                   {{ req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada')) }}
                 </div>
                 
@@ -649,7 +649,7 @@ definePageMeta({
               </div>
               
               <div class="flex flex-col sm:items-end gap-1.5 shrink-0">
-                <div class="font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md border w-fit" :class="req.status === 'pending' ? 'text-orange-600 border-orange-200 bg-orange-50' : (req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-brand-600 border-brand-200 bg-brand-50' : 'text-slate-500 border-slate-200 bg-slate-50'))">
+                <div class="font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-md border w-fit" :class="req.status === 'pending' ? 'text-orange-600 border-orange-200 bg-orange-50' : (req.status === 'accepted' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : (req.status === 'completed' ? 'text-sky-600 border-sky-200 bg-sky-50' : 'text-slate-500 border-slate-200 bg-slate-50'))">
                   {{ req.status === 'pending' ? 'Aguardando' : (req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada'))) }}
                 </div>
                 
