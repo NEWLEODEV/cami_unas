@@ -250,7 +250,7 @@ definePageMeta({
     <div class="space-y-6">
 
     <!-- Sticky Header Wrapper para Estoque -->
-    <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center gap-4 transition-all">
+    <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 flex flex-col lg:flex-row lg:items-center gap-4 transition-all">
       <!-- Barra de Busca -->
       <div class="flex-1 min-w-[250px] bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white flex items-center gap-2">
         <div class="w-7 h-7 bg-brand-50 rounded-full flex items-center justify-center shrink-0">

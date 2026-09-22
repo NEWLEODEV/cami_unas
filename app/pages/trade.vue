@@ -347,7 +347,7 @@ definePageMeta({
 
     <div class="space-y-6">
     <!-- Sticky Header Wrapper para Trade -->
-    <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 border-b border-slate-200 shadow-sm flex flex-col xl:flex-row xl:items-center gap-3 transition-all">
+    <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 flex flex-col xl:flex-row xl:items-center gap-3 transition-all">
 
       <!-- Tab Switcher -->
       <div class="flex p-1 bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-white shrink-0 z-30 relative">
