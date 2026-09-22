@@ -21,8 +21,22 @@ const filterCollection = ref('')
 const expandedImage = ref(null)
 const productModal = ref(null)
 const tradeModal = ref(null)
+const completeModal = ref(null)
 
 const openNewModal = () => productModal.value?.openNewModal()
+
+const openCompleteModal = (req) => {
+  completeModal.value?.openModal(req)
+}
+
+const isWithinEditPeriod = (req) => {
+  if (!req.completed_at) return false
+  const completedDate = new Date(req.completed_at)
+  const now = new Date()
+  const diffTime = now.getTime() - completedDate.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays <= 7
+}
 
 const fetchEntries = async () => {
   if (entries.value.length === 0) loading.value = true
@@ -589,9 +603,9 @@ definePageMeta({
                   {{ req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada')) }}
                 </div>
                 
-                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-1.5">
-                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-2 py-1 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg font-bold text-[10px] shadow-sm transition-colors">Desistir</button>
-                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold text-[10px] shadow-sm transition-colors">Concluir</button>
+                <div v-if="req.status === 'accepted' || (req.status === 'completed' && isWithinEditPeriod(req))" class="flex flex-wrap justify-end gap-1.5">
+                  <button v-if="req.status === 'accepted'" @click="updateRequestStatus(req.id, 'cancelled')" class="px-2 py-1 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg font-bold text-[10px] shadow-sm transition-colors">Desistir</button>
+                  <button @click="openCompleteModal(req)" class="px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold text-[10px] shadow-sm transition-colors">{{ req.status === 'completed' ? 'Editar Conclusão' : 'Concluir' }}</button>
                 </div>
               </div>
             </div>
@@ -639,9 +653,9 @@ definePageMeta({
                   {{ req.status === 'pending' ? 'Aguardando' : (req.status === 'accepted' ? 'Aceita' : (req.status === 'completed' ? 'Concluída' : (req.status === 'cancelled' ? 'Cancelada' : 'Recusada'))) }}
                 </div>
                 
-                <div v-if="req.status === 'accepted'" class="flex flex-wrap justify-end gap-1.5">
-                  <button @click="updateRequestStatus(req.id, 'cancelled')" class="px-2 py-1 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg font-bold text-[10px] shadow-sm transition-colors">Desistir</button>
-                  <button @click="updateRequestStatus(req.id, 'completed')" class="px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold text-[10px] shadow-sm transition-colors">Concluir</button>
+                <div v-if="req.status === 'accepted' || (req.status === 'completed' && isWithinEditPeriod(req))" class="flex flex-wrap justify-end gap-1.5">
+                  <button v-if="req.status === 'accepted'" @click="updateRequestStatus(req.id, 'cancelled')" class="px-2 py-1 bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg font-bold text-[10px] shadow-sm transition-colors">Desistir</button>
+                  <button @click="openCompleteModal(req)" class="px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold text-[10px] shadow-sm transition-colors">{{ req.status === 'completed' ? 'Editar Conclusão' : 'Concluir' }}</button>
                 </div>
               </div>
             </div>
@@ -653,6 +667,7 @@ definePageMeta({
 
     <ProductFormModal ref="productModal" @saved="fetchEntries" />
     <TradeFormModal ref="tradeModal" @saved="fetchEntries" />
+    <TradeCompleteModal ref="completeModal" @saved="() => { fetchTradeRequests(); fetchEntries(); }" />
 
     <!-- Modal de Imagem Expandida -->
     <div v-if="expandedImage" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-rose-950/60 backdrop-blur-md" @click="expandedImage = null">
