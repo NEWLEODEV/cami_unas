@@ -412,69 +412,41 @@ definePageMeta({
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- MAIN GRIDS -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Coluna 1: Composição do Acervo (Donut & Finishes) -->
-      <div class="lg:col-span-2 space-y-6">
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Investment Chart -->
-          <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6">
-            <h2 class="text-lg font-bold text-rose-950 mb-6 flex items-center gap-2">
-              <TrendingUp class="w-5 h-5 text-emerald-400" />
-              Evolução do Investimento
-            </h2>
-            <div v-if="investmentData && investmentData.labels.length > 0" class="h-48 w-full">
-               <Line :data="investmentData" :options="lineChartOptions" />
+       <!-- MAIN GRIDS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Últimas Entradas -->
+      <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white overflow-hidden">
+        <div class="p-5 border-b border-surface-100 flex items-center gap-2 bg-gradient-to-r from-brand-50/50 to-transparent">
+          <Clock class="w-5 h-5 text-brand-500" />
+          <h2 class="font-bold text-rose-950">Últimas Entradas</h2>
+        </div>
+        <div class="p-2">
+          <div v-for="entry in recentEntries" :key="entry.id" class="flex items-center gap-3 p-3 hover:bg-white rounded-2xl transition-colors">
+            <div class="w-12 h-12 bg-surface-50 rounded-xl overflow-hidden shrink-0 border border-surface-100 flex items-center justify-center text-slate-300">
+              <img v-if="entry.products?.image_url" :src="entry.products.image_url" class="w-full h-full object-cover">
+              <Package v-else class="w-6 h-6" />
             </div>
-            <div v-else class="h-48 flex items-center justify-center text-slate-400 text-sm">Dados insuficientes.</div>
-          </div>
-
-          <!-- Últimas Entradas -->
-          <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white overflow-hidden">
-            <div class="p-5 border-b border-surface-100 flex items-center gap-2 bg-gradient-to-r from-brand-50/50 to-transparent">
-              <Clock class="w-5 h-5 text-brand-500" />
-              <h2 class="font-bold text-rose-950">Últimas Entradas</h2>
-            </div>
-            <div class="p-2">
-              <div v-for="entry in recentEntries" :key="entry.id" class="flex items-center gap-3 p-3 hover:bg-white rounded-2xl transition-colors">
-                <div class="w-12 h-12 bg-surface-50 rounded-xl overflow-hidden shrink-0 border border-surface-100 flex items-center justify-center text-slate-300">
-                  <img v-if="entry.products?.image_url" :src="entry.products.image_url" class="w-full h-full object-cover">
-                  <Package v-else class="w-6 h-6" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <p class="text-sm font-bold text-rose-950 truncate">{{ entry.products?.name }}</p>
-                  <p class="text-xs text-slate-400 truncate">{{ entry.products?.brand }} • {{ entry.quantity }} un</p>
-                </div>
-              </div>
-              <div v-if="recentEntries.length === 0" class="p-4 text-center text-sm text-slate-400">Nenhuma entrada recente.</div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-bold text-rose-950 truncate">{{ entry.products?.name }}</p>
+              <p class="text-xs text-slate-400 truncate">{{ entry.products?.brand }} • {{ entry.quantity }} un</p>
             </div>
           </div>
+          <div v-if="recentEntries.length === 0" class="p-4 text-center text-sm text-slate-400">Nenhuma entrada recente.</div>
         </div>
       </div>
 
-      <!-- Coluna 2: Entradas, Top Marcas, Favoritos -->
-      <div class="space-y-6">
-        
-
-
-        <!-- Top Marcas -->
-        <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-5">
-          <h2 class="text-lg font-bold text-rose-950 mb-4">Top Marcas</h2>
-          <div class="space-y-3">
-            <div v-for="(brand, index) in topBrands" :key="brand[0]" class="flex items-center justify-between p-2 rounded-xl" :class="index === 0 ? 'bg-brand-50' : ''">
-              <div class="flex items-center gap-3">
-                <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs" :class="index === 0 ? 'bg-brand-500 text-white shadow-sm' : 'bg-surface-200 text-slate-500'">{{ index + 1 }}</div>
-                <span class="font-medium text-slate-700">{{ brand[0] }}</span>
-              </div>
-              <span class="text-sm font-bold text-rose-950">{{ brand[1] }}</span>
+      <!-- Top Marcas -->
+      <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-5">
+        <h2 class="text-lg font-bold text-rose-950 mb-4">Top Marcas</h2>
+        <div class="space-y-3">
+          <div v-for="(brand, index) in topBrands" :key="brand[0]" class="flex items-center justify-between p-2 rounded-xl" :class="index === 0 ? 'bg-brand-50' : ''">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs" :class="index === 0 ? 'bg-brand-500 text-white shadow-sm' : 'bg-surface-200 text-slate-500'">{{ index + 1 }}</div>
+              <span class="font-medium text-slate-700">{{ brand[0] }}</span>
             </div>
+            <span class="text-sm font-bold text-rose-950">{{ brand[1] }}</span>
           </div>
         </div>
-
       </div>
     </div>
   </div>
