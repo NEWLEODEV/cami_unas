@@ -110,7 +110,7 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="h-screen overflow-hidden flex flex-col md:flex-row bg-transparent">
+  <div class="h-[100dvh] overflow-hidden flex flex-col md:flex-row bg-transparent">
     <!-- Sidebar (Floating Style) -->
     <aside class="hidden md:flex w-64 bg-white/80 backdrop-blur-md border-r border-brand-100 flex-col shrink-0 m-4 rounded-3xl shadow-soft">
       <div class="h-16 flex items-center justify-center border-b border-brand-50 mx-6">
@@ -169,7 +169,7 @@ const handleLogout = async () => {
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden min-w-0 pb-20 md:pb-0">
+    <main class="flex-1 flex flex-col overflow-hidden min-w-0 pb-20 md:pb-0">
       <!-- Header -->
       <header class="h-16 md:h-20 flex items-center justify-between px-4 md:px-8 shrink-0 bg-white/50 md:bg-transparent backdrop-blur-md sticky top-0 z-50 md:relative">
         <!-- Logo Mobile -->
