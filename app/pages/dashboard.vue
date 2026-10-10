@@ -420,17 +420,6 @@ definePageMeta({
       <!-- Coluna 1: Composição do Acervo (Donut & Finishes) -->
       <div class="lg:col-span-2 space-y-6">
         
-        <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6">
-          <h2 class="text-lg font-bold text-rose-950 mb-6 flex items-center gap-2">
-            <Droplet class="w-5 h-5 text-brand-400" />
-            Distribuição por Cores
-          </h2>
-          <div v-if="colorData" class="h-64 relative w-full flex items-center justify-center">
-             <Pie :data="colorData" :options="colorChartOptions" />
-          </div>
-          <div v-else class="h-64 flex items-center justify-center text-slate-400">Sem dados suficientes.</div>
-        </div>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Investment Chart -->
           <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6">
