@@ -126,8 +126,10 @@ definePageMeta({
         </div>
       </div>
 
-      <div class="mt-1 lg:mt-6 pb-2 text-center text-slate-400 text-[10px] sm:text-xs md:text-sm font-medium shrink-0">
-        © 2026 Desenvolvido por <a href="https://www.instagram.com/leonardo.bezerra.dev/" target="_blank" class="hover:text-brand-500 transition-colors"><b>Leonardo Bezerra</b></a> - Todos os direitos reservados.
+      <div class="mt-1 lg:mt-6 pb-2 text-center text-slate-400 text-[10px] sm:text-xs md:text-sm font-medium shrink-0 leading-relaxed">
+        <span class="block md:inline">© 2026 Desenvolvido por <a href="https://www.instagram.com/leonardo.bezerra.dev/" target="_blank" class="hover:text-brand-500 transition-colors"><b>Leonardo Bezerra</b></a></span>
+        <span class="hidden md:inline"> - </span>
+        <span class="block md:inline">Todos os direitos reservados.</span>
       </div>
     </div>
   </NuxtLayout>
