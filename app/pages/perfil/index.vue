@@ -62,73 +62,73 @@ definePageMeta({
       </div>
     </template>
 
-    <div class="max-w-3xl mx-auto space-y-6 mt-2 lg:mt-4">
-      <div v-if="loading" class="p-12 text-center text-slate-400 font-medium bg-white/80 backdrop-blur-md rounded-[2rem] border border-white shadow-soft">
+    <div class="max-w-3xl mx-auto space-y-4 md:space-y-6 mt-2 lg:mt-4">
+      <div v-if="loading" class="p-8 md:p-12 text-center text-slate-400 font-medium bg-white/80 backdrop-blur-md rounded-3xl md:rounded-[2rem] border border-white shadow-soft">
         Carregando informações do perfil...
       </div>
       
-      <div v-else class="bg-white/80 backdrop-blur-md rounded-[2rem] border border-white shadow-soft overflow-hidden">
+      <div v-else class="bg-white/80 backdrop-blur-md rounded-3xl md:rounded-[2rem] border border-white shadow-soft overflow-hidden">
         
         <!-- Header do Perfil (Capa) -->
-        <div class="h-32 bg-gradient-to-r from-brand-300 to-rose-300 relative">
+        <div class="h-24 md:h-32 bg-gradient-to-r from-brand-300 to-rose-300 relative">
           <!-- Avatar centralizado na borda -->
-          <div class="absolute -bottom-12 left-8 w-24 h-24 rounded-full bg-white p-1.5 shadow-md">
-            <div class="w-full h-full rounded-full bg-gradient-to-br from-brand-400 to-rose-500 flex items-center justify-center text-white text-3xl font-bold shadow-inner border-2 border-white/20">
+          <div class="absolute -bottom-10 md:-bottom-12 left-6 md:left-8 w-20 h-20 md:w-24 md:h-24 rounded-full bg-white p-1.5 shadow-md">
+            <div class="w-full h-full rounded-full bg-gradient-to-br from-brand-400 to-rose-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold shadow-inner border-2 border-white/20">
               {{ userInitial }}
             </div>
           </div>
         </div>
 
         <!-- Botão de Editar flutuante no topo direito -->
-        <div class="flex justify-end p-4">
-          <NuxtLink to="/perfil/editar" class="flex items-center gap-2 px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-full font-bold text-sm transition-colors shadow-sm">
-            <Edit3 class="w-4 h-4" />
+        <div class="flex justify-end p-3 md:p-4">
+          <NuxtLink to="/perfil/editar" class="flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-full font-bold text-xs md:text-sm transition-colors shadow-sm">
+            <Edit3 class="w-3.5 h-3.5 md:w-4 md:h-4" />
             Editar Perfil
           </NuxtLink>
         </div>
 
         <!-- Conteúdo do Perfil -->
-        <div class="px-8 pb-10 pt-4 space-y-8">
+        <div class="px-6 pb-6 pt-0 md:px-8 md:pb-10 md:pt-4 space-y-6 md:space-y-8">
           
           <div>
-            <h2 class="text-2xl font-bold text-rose-950">{{ profile?.name || 'Usuário Sem Nome' }}</h2>
-            <p class="text-slate-500 font-medium mt-1 flex items-center gap-2">
+            <h2 class="text-xl md:text-2xl font-bold text-rose-950">{{ profile?.name || 'Usuário Sem Nome' }}</h2>
+            <p class="text-sm md:text-base text-slate-500 font-medium mt-1 flex items-center gap-2">
               <MapPin class="w-4 h-4" />
               {{ profile?.city || 'Cidade não informada' }}{{ profile?.state ? ` - ${profile.state}` : '' }}
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <!-- Email -->
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-4">
-              <div class="w-10 h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
-                <Mail class="w-5 h-5" />
+            <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3 md:gap-4">
+              <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
+                <Mail class="w-4 h-4 md:w-5 md:h-5" />
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-500 uppercase tracking-wider">E-mail de acesso</p>
-                <p class="text-rose-950 font-medium mt-1">{{ user?.email || 'Não informado' }}</p>
+                <p class="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider">E-mail de acesso</p>
+                <p class="text-sm md:text-base text-rose-950 font-medium mt-0.5 md:mt-1">{{ user?.email || 'Não informado' }}</p>
               </div>
             </div>
 
             <!-- Telefone / WhatsApp -->
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-4">
-              <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                <Phone class="w-5 h-5" />
+            <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3 md:gap-4">
+              <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                <Phone class="w-4 h-4 md:w-5 md:h-5" />
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-500 uppercase tracking-wider">WhatsApp</p>
-                <p class="text-rose-950 font-medium mt-1">{{ profile?.phone || 'Não informado' }}</p>
+                <p class="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider">WhatsApp</p>
+                <p class="text-sm md:text-base text-rose-950 font-medium mt-0.5 md:mt-1">{{ profile?.phone || 'Não informado' }}</p>
               </div>
             </div>
             
             <!-- Cidade -->
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-4">
-              <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shrink-0">
-                <MapPin class="w-5 h-5" />
+            <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3 md:gap-4">
+              <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shrink-0">
+                <MapPin class="w-4 h-4 md:w-5 md:h-5" />
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-500 uppercase tracking-wider">Localização</p>
-                <p class="text-rose-950 font-medium mt-1">
+                <p class="text-xs md:text-sm font-bold text-slate-500 uppercase tracking-wider">Localização</p>
+                <p class="text-sm md:text-base text-rose-950 font-medium mt-0.5 md:mt-1">
                   {{ profile?.city || 'Não informada' }}{{ profile?.state ? ` - ${profile.state}` : '' }}
                 </p>
               </div>
