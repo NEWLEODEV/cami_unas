@@ -3,10 +3,10 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-vue-next'
 
 const slides = [
-  '/carousel/Ola.png',
-  '/carousel/Slide2.PNG',
-  '/carousel/Slide3.PNG',
-  '/carousel/Slide4.PNG'
+  { desktop: '/carousel/Ola.png', mobile: '/carousel/SlideMobile1.png' },
+  { desktop: '/carousel/Slide2.PNG', mobile: '/carousel/SlideMobile2.png' },
+  { desktop: '/carousel/Slide3.PNG', mobile: '/carousel/SlideMobile3.png' },
+  { desktop: '/carousel/Slide4.PNG', mobile: '/carousel/SlideMobile4.png' }
 ]
 
 const currentSlide = ref(0)
@@ -87,7 +87,10 @@ definePageMeta({
           :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
         >
           <div v-for="(slide, index) in slides" :key="index" class="w-full h-full shrink-0 flex items-center justify-center">
-            <img :src="slide" alt="Slide" class="w-full h-full object-contain scale-100 lg:scale-[1.27] transition-transform duration-500" />
+            <!-- Desktop Image -->
+            <img :src="slide.desktop" alt="Slide" class="hidden md:block w-full h-full object-contain scale-100 lg:scale-[1.27] transition-transform duration-500" />
+            <!-- Mobile Image -->
+            <img :src="slide.mobile" alt="Slide Mobile" class="md:hidden w-full h-full object-contain scale-100 transition-transform duration-500" />
           </div>
         </div>
         
