@@ -479,7 +479,7 @@ definePageMeta({
                   {{ formatCurrency(entry.quantity * entry.purchase_price) }}
                 </td>
                 <td class="py-5 px-8 text-right">
-                  <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button @click="toggleTradeStatus(entry)" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-colors tooltip-left" data-tooltip="Disponivel para troca">
                       <ArrowRightLeft class="w-4 h-4" />
                     </button>
@@ -503,7 +503,7 @@ definePageMeta({
             </div>
 
             <!-- Ações -->
-            <div class="absolute top-4 right-4 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-brand-50">
+            <div class="absolute top-4 right-4 flex flex-col gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 bg-white/90 backdrop-blur-sm rounded-full p-1 shadow-sm border border-brand-50">
               <button @click="toggleTradeStatus(entry)" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-colors tooltip-left" data-tooltip="Disponivel para troca">
                 <ArrowRightLeft class="w-3.5 h-3.5" />
               </button>
