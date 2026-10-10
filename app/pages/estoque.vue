@@ -443,7 +443,7 @@ definePageMeta({
                   {{ formatCurrency(entry.quantity * entry.purchase_price) }}
                 </td>
                 <td class="py-5 px-8 text-right">
-                  <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button @click="openEditModal(entry)" class="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors tooltip-left" data-tooltip="Editar">
                       <Pencil class="w-4 h-4" />
                     </button>
@@ -466,12 +466,12 @@ definePageMeta({
               <button 
                 @click.stop="toggleSelection(entry.id)"
                 class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 border-2 mx-auto"
-                :class="selectedEntries.includes(entry.id) ? 'bg-brand-500 border-brand-500 text-white shadow-md' : 'bg-white/80 border-slate-200 text-transparent hover:border-brand-400 opacity-0 group-hover:opacity-100 shadow-sm backdrop-blur-sm'"
+                :class="selectedEntries.includes(entry.id) ? 'bg-brand-500 border-brand-500 text-white shadow-md' : 'bg-white/80 border-slate-200 text-transparent hover:border-brand-400 opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-sm backdrop-blur-sm'"
               >
                 <Check class="w-3.5 h-3.5 stroke-[3]" />
               </button>
 
-              <button @click="openEditModal(entry)" class="w-7 h-7 bg-white/90 backdrop-blur-sm border border-brand-50 rounded-full flex items-center justify-center text-slate-400 hover:text-brand-600 hover:bg-brand-50 shadow-sm opacity-0 group-hover:opacity-100 transition-all tooltip-left mx-auto" data-tooltip="Editar">
+              <button @click="openEditModal(entry)" class="w-7 h-7 bg-white/90 backdrop-blur-sm border border-brand-50 rounded-full flex items-center justify-center text-slate-400 hover:text-brand-600 hover:bg-brand-50 shadow-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all tooltip-left mx-auto" data-tooltip="Editar">
                 <Pencil class="w-3.5 h-3.5" />
               </button>
             </div>
@@ -479,7 +479,7 @@ definePageMeta({
             <!-- Indicadores (Favorito e Usado) -->
             <div class="absolute top-4 left-4 flex flex-col items-center gap-1.5 z-10" v-if="entry.products">
               <!-- Hearts Stack -->
-              <div class="flex flex-col items-center gap-0.5 group/hearts bg-white/60 hover:bg-white/90 backdrop-blur-sm rounded-full p-1 pb-1.5 transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-white/50 hover:border-brand-50" :class="{'opacity-0 group-hover:opacity-100': !entry.products.favorite_level}">
+              <div class="flex flex-col items-center gap-0.5 group/hearts bg-white/60 hover:bg-white/90 backdrop-blur-sm rounded-full p-1 pb-1.5 transition-colors shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-white/50 hover:border-brand-50" :class="{'opacity-100 md:opacity-0 md:group-hover:opacity-100': !entry.products.favorite_level}">
                 <button @click.stop="setFavoriteLevel(entry.products, 3)" class="p-0.5 rounded-full transition-all tooltip-right" :class="entry.products.favorite_level >= 3 ? 'text-rose-500' : 'text-slate-300 hover:text-rose-400'" data-tooltip="Super Amei">
                   <Heart class="w-5 h-5" :class="{'fill-current': entry.products.favorite_level >= 3}" />
                 </button>
