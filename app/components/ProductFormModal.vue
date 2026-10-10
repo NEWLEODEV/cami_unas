@@ -262,7 +262,7 @@ const saveProduct = async () => {
       await supabase
         .from('inventory_entries')
         .update({
-          quantity: parseInt(newProduct.value.initial_quantity) || 1,
+          quantity: parseInt(newProduct.value.initial_quantity) >= 0 ? parseInt(newProduct.value.initial_quantity) : 1,
           purchase_price: parseFloat(newProduct.value.initial_price) || 0,
           purchase_date: newProduct.value.initial_purchase_date,
           expiration_date: expDate
@@ -290,7 +290,7 @@ const saveProduct = async () => {
 
       const inventoryPayload = {
         product_id: productId,
-        quantity: parseInt(newProduct.value.initial_quantity) || 1,
+        quantity: parseInt(newProduct.value.initial_quantity) >= 0 ? parseInt(newProduct.value.initial_quantity) : 1,
         purchase_price: parseFloat(newProduct.value.initial_price) || 0,
         purchase_date: newProduct.value.initial_purchase_date,
         expiration_date: expDate
@@ -406,7 +406,7 @@ defineExpose({
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Quantidade *</label>
-              <input v-model="newProduct.initial_quantity" required type="number" min="1" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors">
+              <input v-model="newProduct.initial_quantity" required type="number" min="0" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Custo Unitário (R$) *</label>

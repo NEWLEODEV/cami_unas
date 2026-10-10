@@ -441,7 +441,10 @@ definePageMeta({
               </tr>
             </thead>
             <tbody>
-              <tr v-for="entry in filteredEntries" :key="entry.id" class="border-b transition-colors group" :class="entry.trade_items?.some(t => t.status === 'active') ? 'bg-yellow-50/50 border-yellow-100 hover:bg-yellow-100/50' : 'border-brand-50/30 hover:bg-white'">
+              <tr v-for="entry in filteredEntries" :key="entry.id" class="border-b transition-colors group" :class="[
+                entry.trade_items?.some(t => t.status === 'active') ? 'bg-yellow-50/50 border-yellow-100 hover:bg-yellow-100/50' : 'border-brand-50/30 hover:bg-white',
+                entry.quantity === 0 ? 'opacity-75 bg-slate-50/50 hover:bg-slate-100/50' : ''
+              ]">
                 <td class="py-5 px-8">
                   <div class="flex items-center gap-2 mb-1">
                     <p class="font-semibold text-rose-950 group-hover:text-brand-600 transition-colors">{{ entry.products?.name || 'Produto Excluído' }}</p>
@@ -486,7 +489,10 @@ definePageMeta({
 
         <!-- Ícones Médios e Grandes (Grid) -->
         <div v-else class="grid gap-6" :class="viewMode === 'medium' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'">
-          <div v-for="entry in filteredEntries" :key="entry.id" class="backdrop-blur-md rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden pt-8" :class="entry.trade_items?.some(t => t.status === 'active') ? 'bg-yellow-50/80 border-yellow-200' : 'bg-white/80 border-white'">
+          <div v-for="entry in filteredEntries" :key="entry.id" class="backdrop-blur-md rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden pt-8" :class="[
+            entry.trade_items?.some(t => t.status === 'active') ? 'bg-yellow-50/80 border-yellow-200' : 'bg-white/80 border-white',
+            entry.quantity === 0 ? 'opacity-75 bg-slate-100/50' : ''
+          ]">
             
             <div v-if="entry.trade_items?.some(t => t.status === 'active')" class="absolute top-2 left-0 right-0 text-center pointer-events-none">
               <span class="text-[8px] font-bold text-yellow-700 uppercase tracking-widest">Disponível para troca</span>
@@ -503,7 +509,7 @@ definePageMeta({
 
 
             <div class="flex flex-col items-center text-center gap-3 mb-5 mt-2">
-              <div v-if="entry.products?.image_url" @click="expandedImage = entry.products.image_url" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden cursor-pointer hover:scale-105 transition-transform relative group/img">
+              <div v-if="entry.products?.image_url" @click="expandedImage = entry.products.image_url" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden cursor-pointer hover:scale-105 transition-transform relative group/img" :class="entry.quantity === 0 ? 'grayscale opacity-80' : ''">
                 <img :src="entry.products.image_url" alt="Foto" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-rose-900/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
                   <Search class="w-6 h-6 text-white drop-shadow-md" />
@@ -525,6 +531,9 @@ definePageMeta({
               <div class="flex items-center justify-between text-sm">
                 <span class="text-slate-500 font-medium">Quantidade</span>
                 <span class="font-bold text-rose-950 bg-rose-50 px-2 py-0.5 rounded-lg text-xs border border-rose-100 shadow-sm">+{{ entry.quantity }}</span>
+              </div>
+              <div v-if="entry.quantity === 0" class="text-center text-xs font-bold text-red-500 mt-2">
+                Sem Estoque
               </div>
               <template v-if="viewMode === 'large'">
                 <div class="flex items-center justify-between text-sm">

@@ -94,7 +94,6 @@ const cancelOffer = async () => {
   }
   
   emit('saved', { entry: entry.value })
-  await showAlert('Sucesso', 'Oferta removida com sucesso!')
 }
 
 const submitTrade = async () => {
