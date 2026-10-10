@@ -233,22 +233,26 @@ const handleLogout = async () => {
     </main>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-brand-100 flex items-center justify-around p-2 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
-      <NuxtLink to="/" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
-        <Home class="w-6 h-6" />
-        <span class="text-[10px] font-medium">Início</span>
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-brand-100 flex items-center justify-around px-1 py-2 z-50 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+      <NuxtLink to="/" class="flex flex-col items-center gap-1 p-1 sm:p-2 text-slate-400" active-class="text-brand-600">
+        <Home class="w-5 h-5 sm:w-6 sm:h-6" />
+        <span class="text-[9px] sm:text-[10px] font-medium">Início</span>
       </NuxtLink>
-      <NuxtLink to="/estoque" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
-        <Droplet class="w-6 h-6" />
-        <span class="text-[10px] font-medium whitespace-nowrap">Minha Coleção</span>
+      <NuxtLink to="/shopping" class="flex flex-col items-center gap-1 p-1 sm:p-2 text-slate-400" active-class="text-brand-600">
+        <ShoppingBag class="w-5 h-5 sm:w-6 sm:h-6" />
+        <span class="text-[9px] sm:text-[10px] font-medium">Shopping</span>
       </NuxtLink>
-      <NuxtLink to="/trade" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
-        <ArrowRightLeft class="w-6 h-6" />
-        <span class="text-[10px] font-medium">Trade</span>
+      <NuxtLink to="/estoque" class="flex flex-col items-center gap-1 p-1 sm:p-2 text-slate-400" active-class="text-brand-600">
+        <Droplet class="w-5 h-5 sm:w-6 sm:h-6" />
+        <span class="text-[9px] sm:text-[10px] font-medium whitespace-nowrap">Minha Coleção</span>
       </NuxtLink>
-      <NuxtLink to="/shopping" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
-        <ShoppingBag class="w-6 h-6" />
-        <span class="text-[10px] font-medium">Shopping</span>
+      <NuxtLink to="/trade" class="flex flex-col items-center gap-1 p-1 sm:p-2 text-slate-400" active-class="text-brand-600">
+        <ArrowRightLeft class="w-5 h-5 sm:w-6 sm:h-6" />
+        <span class="text-[9px] sm:text-[10px] font-medium">Trade</span>
+      </NuxtLink>
+      <NuxtLink to="/dashboard" class="flex flex-col items-center gap-1 p-1 sm:p-2 text-slate-400" active-class="text-brand-600">
+        <LayoutDashboard class="w-5 h-5 sm:w-6 sm:h-6" />
+        <span class="text-[9px] sm:text-[10px] font-medium">Dashboard</span>
       </NuxtLink>
     </nav>
 
