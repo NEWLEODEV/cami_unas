@@ -6,7 +6,8 @@ const slides = [
   { desktop: '/carousel/Ola.png', mobile: '/carousel/SlideMobile1.png' },
   { desktop: '/carousel/Slide2.PNG', mobile: '/carousel/SlideMobile2.png' },
   { desktop: '/carousel/Slide3.PNG', mobile: '/carousel/SlideMobile3.png' },
-  { desktop: '/carousel/Slide4.PNG', mobile: '/carousel/SlideMobile4.png' }
+  { desktop: '/carousel/Slide4.PNG', mobile: '/carousel/SlideMobile4.png' },
+  { desktop: '/carousel/Slide4.PNG', mobile: '/carousel/SlideMobile5.jpg' }
 ]
 
 const currentSlide = ref(0)
