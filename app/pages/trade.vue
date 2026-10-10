@@ -350,19 +350,19 @@ definePageMeta({
     <div class="sticky -top-4 md:-top-8 z-40 bg-[#FCF8FA] -mx-4 md:-mx-8 px-4 md:px-8 pb-4 -mt-4 md:-mt-8 mb-6 flex flex-col xl:flex-row xl:items-center gap-3 transition-all">
 
       <!-- Tab Switcher -->
-      <div class="flex p-1 bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-white shrink-0 z-30 relative">
-        <button @click="activeTab = 'inventory'" class="flex-1 py-1 px-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap" :class="activeTab === 'inventory' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'">
-          <PackageOpen class="w-4 h-4" />
-        Minha Coleção
+      <div class="flex p-1 bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-white shrink-0 z-30 relative overflow-hidden">
+        <button @click="activeTab = 'inventory'" class="flex-1 py-1 px-1.5 sm:px-2 md:px-4 rounded-full text-[10px] sm:text-xs md:text-sm font-bold transition-all flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap" :class="activeTab === 'inventory' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'">
+          <PackageOpen class="w-3 h-3 md:w-4 md:h-4" />
+          Coleção
         </button>
-        <button @click="activeTab = 'trading'" class="flex-1 py-1 px-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap" :class="activeTab === 'trading' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'">
-          <ArrowRightLeft class="w-4 h-4" />
-          Quero trocar
+        <button @click="activeTab = 'trading'" class="flex-1 py-1 px-1.5 sm:px-2 md:px-4 rounded-full text-[10px] sm:text-xs md:text-sm font-bold transition-all flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap" :class="activeTab === 'trading' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'">
+          <ArrowRightLeft class="w-3 h-3 md:w-4 md:h-4" />
+          Trocar
         </button>
-        <button @click="activeTab = 'requests'" class="flex-1 py-1 px-4 rounded-full text-sm font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap" :class="activeTab === 'requests' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'">
-          <Bell class="w-4 h-4" />
+        <button @click="activeTab = 'requests'" class="flex-1 py-1 px-1.5 sm:px-2 md:px-4 rounded-full text-[10px] sm:text-xs md:text-sm font-bold transition-all flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap" :class="activeTab === 'requests' ? 'bg-brand-50 text-brand-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'">
+          <Bell class="w-3 h-3 md:w-4 md:h-4" />
           Solicitações
-          <span v-if="incomingRequests.filter(r => r.status === 'pending').length > 0" class="w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[10px]">
+          <span v-if="incomingRequests.filter(r => r.status === 'pending').length > 0" class="w-4 h-4 md:w-5 md:h-5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[9px] md:text-[10px]">
             {{ incomingRequests.filter(r => r.status === 'pending').length }}
           </span>
         </button>
