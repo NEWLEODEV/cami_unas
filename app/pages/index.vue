@@ -75,11 +75,11 @@ definePageMeta({
       <p class="text-slate-600 font-medium text-lg truncate">Bem-vindo(a) ao Universo CAMIS!</p>
     </template>
 
-    <div class="h-full w-full flex flex-col justify-between gap-2 lg:gap-0 overflow-hidden" style="font-family: 'Poppins', sans-serif;">
+    <div class="h-[calc(100dvh-11.5rem)] md:h-full w-full flex flex-col justify-between gap-1 lg:gap-0 overflow-hidden" style="font-family: 'Poppins', sans-serif;">
       
       <!-- Carrossel ocupando o espaço do card -->
       <div 
-        class="relative w-full rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md group flex-1 min-h-0"
+        class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md group flex-1 min-h-0"
       >
         <!-- Slides -->
         <div 
@@ -100,23 +100,23 @@ definePageMeta({
         </button>
         
         <!-- Controles de Reprodução e Indicadores -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/60 backdrop-blur-md px-5 py-2.5 rounded-full shadow-sm border border-white/50">
+        <div class="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 md:gap-4 bg-white/60 backdrop-blur-md px-3 py-1.5 md:px-5 md:py-2.5 rounded-full shadow-sm border border-white/50">
           <!-- Play / Pause -->
           <button @click="togglePlay" class="text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center hover:scale-110" :title="isPlaying ? 'Pausar' : 'Reproduzir'">
-            <Pause v-if="isPlaying" class="w-4 h-4 fill-current" />
-            <Play v-else class="w-4 h-4 fill-current" />
+            <Pause v-if="isPlaying" class="w-3 h-3 md:w-4 md:h-4 fill-current" />
+            <Play v-else class="w-3 h-3 md:w-4 md:h-4 fill-current" />
           </button>
           
-          <div class="w-px h-4 bg-brand-200"></div>
+          <div class="w-px h-3 md:h-4 bg-brand-200"></div>
 
           <!-- Indicadores (Bolinhas) -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 md:gap-3">
             <button 
               v-for="(_, index) in slides" 
               :key="'dot-'+index"
               @click="goToSlide(index); stopAutoPlay()"
-              class="h-2.5 rounded-full transition-all duration-500 shadow-sm"
-              :class="currentSlide === index ? 'bg-brand-500 w-8' : 'bg-white hover:bg-brand-100 w-2.5'"
+              class="h-1.5 md:h-2.5 rounded-full transition-all duration-500 shadow-sm"
+              :class="currentSlide === index ? 'bg-brand-500 w-4 md:w-8' : 'bg-white hover:bg-brand-100 w-1.5 md:w-2.5'"
             ></button>
           </div>
         </div>
