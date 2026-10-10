@@ -7,15 +7,9 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase'
   ],
   supabase: {
+    url: process.env.SUPABASE_URL || 'https://urtyfejykpkfkqueyjpz.supabase.co',
+    key: process.env.SUPABASE_KEY || 'sb_publishable_73OsN8qTuT603TF00UWVIA_kqoKn5Ls',
     redirect: false
-  },
-  runtimeConfig: {
-    public: {
-      supabase: {
-        url: process.env.SUPABASE_URL || 'https://urtyfejykpkfkqueyjpz.supabase.co',
-        key: process.env.SUPABASE_KEY || 'sb_publishable_73OsN8qTuT603TF00UWVIA_kqoKn5Ls',
-      }
-    }
   },
   postcss: {
     plugins: {
