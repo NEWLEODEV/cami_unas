@@ -75,11 +75,11 @@ definePageMeta({
       <p class="text-slate-600 font-medium text-lg truncate">Bem-vindo(a) ao Universo CAMIS!</p>
     </template>
 
-    <div class="h-full w-full flex flex-col" style="font-family: 'Poppins', sans-serif;">
+    <div class="h-full w-full flex flex-col justify-between gap-2 lg:gap-0 overflow-hidden" style="font-family: 'Poppins', sans-serif;">
       
       <!-- Carrossel ocupando o espaço do card -->
       <div 
-        class="flex-1 relative w-full rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md group"
+        class="relative w-full rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md group flex-1 min-h-0"
       >
         <!-- Slides -->
         <div 
@@ -87,7 +87,7 @@ definePageMeta({
           :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
         >
           <div v-for="(slide, index) in slides" :key="index" class="w-full h-full shrink-0 flex items-center justify-center">
-            <img :src="slide" alt="Slide" class="w-full h-full object-contain scale-[1.27] transition-transform duration-500" />
+            <img :src="slide" alt="Slide" class="w-full h-full object-contain scale-100 lg:scale-[1.27] transition-transform duration-500" />
           </div>
         </div>
         
@@ -122,7 +122,12 @@ definePageMeta({
         </div>
       </div>
 
-      <div class="mt-6 text-center text-slate-400 text-sm font-medium">
+      <!-- Carrossel de Ofertas (Apenas Mobile) -->
+      <div class="md:hidden w-full relative flex-1 min-h-0 -mx-2">
+        <SidebarOfferCarousel class="w-full h-full" />
+      </div>
+
+      <div class="mt-1 lg:mt-6 pb-2 text-center text-slate-400 text-[10px] sm:text-xs md:text-sm font-medium shrink-0">
         © 2026 Desenvolvido por <a href="https://www.instagram.com/leonardo.bezerra.dev/" target="_blank" class="hover:text-brand-500 transition-colors"><b>Leonardo Bezerra</b></a> - Todos os direitos reservados.
       </div>
     </div>

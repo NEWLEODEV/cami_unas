@@ -136,34 +136,37 @@ definePageMeta({
           >
         </div>
 
-        <!-- Categoria Dropdown -->
-        <div class="flex items-center gap-3 bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white shrink-0">
-          <div class="flex items-center gap-2 shrink-0 min-w-[200px]">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Categoria</span>
-            <CustomSelect 
-              v-model="selectedCategoryId" 
-              :options="categoryOptions"
-              placeholder="Todas as Categorias"
-              variant="ghost"
-            />
+        <div class="flex flex-row items-stretch gap-2 w-full lg:w-auto">
+          <!-- Categoria Dropdown -->
+          <div class="flex-1 flex items-center gap-1 md:gap-2 bg-white/80 backdrop-blur-md p-1 px-2 md:p-1.5 md:px-3 rounded-full shadow-sm border border-white min-w-0">
+            <span class="hidden sm:block text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Categoria</span>
+            <div class="flex-1 min-w-0">
+              <CustomSelect 
+                v-model="selectedCategoryId" 
+                :options="categoryOptions"
+                placeholder="Categorias"
+                variant="ghost"
+              />
+            </div>
           </div>
-        </div>
 
-        <!-- Wishlist Filter -->
-        <button 
-          @click="showWishlistOnly = !showWishlistOnly"
-          :class="showWishlistOnly ? 'bg-rose-50 text-rose-600 border-rose-200 shadow-sm' : 'bg-white/80 text-slate-500 border-white hover:bg-white hover:text-rose-500 shadow-sm'"
-          class="flex items-center gap-2 px-4 py-1.5 rounded-full border transition-all shrink-0 font-bold text-sm backdrop-blur-md"
-        >
-          <Heart class="w-4 h-4" :class="{'fill-current': showWishlistOnly}" />
-          Lista de Desejos
-          <span v-if="(wishlistIds || []).length > 0" class="flex items-center justify-center w-5 h-5 bg-rose-500 text-white rounded-full text-[10px] ml-1 shrink-0">
-            {{ (wishlistIds || []).length }}
-          </span>
-        </button>
+          <!-- Wishlist Filter -->
+          <button 
+            @click="showWishlistOnly = !showWishlistOnly"
+            :class="showWishlistOnly ? 'bg-rose-50 text-rose-600 border-rose-200 shadow-sm' : 'bg-white/80 text-slate-500 border-white hover:bg-white hover:text-rose-500 shadow-sm'"
+            class="flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-1.5 rounded-full border transition-all shrink-0 font-bold text-xs md:text-sm backdrop-blur-md"
+          >
+            <Heart class="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" :class="{'fill-current': showWishlistOnly}" />
+            <span class="hidden sm:inline">Lista de Desejos</span>
+            <span class="sm:hidden">Desejos</span>
+            <span v-if="(wishlistIds || []).length > 0" class="flex items-center justify-center w-4 h-4 md:w-5 md:h-5 bg-rose-500 text-white rounded-full text-[9px] md:text-[10px] ml-0.5 shrink-0">
+              {{ (wishlistIds || []).length }}
+            </span>
+          </button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 w-full">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 w-full">
         <div v-for="product in filteredProducts" :key="product.id" class="bg-white/90 backdrop-blur-md rounded-2xl p-2.5 border border-white shadow-soft hover:shadow-hover transition-all duration-300 flex flex-col group relative">
           
           <!-- Badge Patrocinado -->
@@ -205,7 +208,8 @@ definePageMeta({
             <!-- Wishlist Botão -->
             <button @click="toggleWishlist(product.id)" class="w-full mt-2 font-bold py-2 text-xs rounded-lg flex items-center justify-center gap-1.5 transition-all border shadow-sm" :class="(wishlistIds || []).includes(product.id) ? 'bg-amber-50 text-amber-600 border-amber-300 hover:bg-amber-100' : 'bg-white text-slate-500 border-slate-200 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200'">
               <Heart class="w-3.5 h-3.5" :class="{'fill-current': (wishlistIds || []).includes(product.id)}" />
-              {{ (wishlistIds || []).includes(product.id) ? 'Na Lista de Desejos' : 'Adcionar a Lista de Desejos' }}
+              <span class="hidden sm:inline">{{ (wishlistIds || []).includes(product.id) ? 'Na Lista de Desejos' : 'Adicionar à Lista de Desejos' }}</span>
+              <span class="sm:hidden">{{ (wishlistIds || []).includes(product.id) ? 'Salvo' : 'Salvar' }}</span>
             </button>
           </div>
         </div>

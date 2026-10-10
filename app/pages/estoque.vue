@@ -265,51 +265,55 @@ definePageMeta({
       </div>
 
       <!-- Filtros na mesma linha -->
-      <div class="flex flex-nowrap overflow-x-auto items-center gap-3 bg-white/80 backdrop-blur-md p-1.5 px-3 rounded-full shadow-sm border border-white shrink-0" style="scrollbar-width: none; -ms-overflow-style: none;">
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Marca</span>
-          <CustomSelect 
-            v-model="filterBrand" 
-            :options="uniqueEntryBrands"
-            placeholder="Todas"
-            variant="ghost"
-          />
+      <div class="flex flex-nowrap items-center bg-white/80 backdrop-blur-md p-1 px-2 md:p-1.5 md:px-3 rounded-full shadow-sm border border-white shrink-0 w-full lg:w-auto" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div class="flex-1 flex items-center gap-1 md:gap-2 min-w-0 pr-2">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Marca</span>
+          <div class="flex-1 min-w-0">
+            <CustomSelect 
+              v-model="filterBrand" 
+              :options="uniqueEntryBrands"
+              placeholder="Todas"
+              variant="ghost"
+            />
+          </div>
         </div>
         
         <div class="w-px h-4 bg-slate-200 shrink-0"></div>
 
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Favoritos</span>
-          <CustomSelect 
-            v-model="filterFavoriteLevel" 
-            :options="favoriteOptions"
-            placeholder="Todos"
-            variant="ghost"
-          >
-            <!-- Custom Option Layout -->
-            <template #option="{ option }">
-              <div class="flex items-center justify-between w-full pr-3">
-                <span class="block truncate">{{ option.label }}</span>
-                <div class="flex items-center gap-0.5 shrink-0" v-if="option.value">
-                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
+        <div class="flex-1 flex items-center gap-1 md:gap-2 min-w-0 pl-2">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Favoritos</span>
+          <div class="flex-1 min-w-0">
+            <CustomSelect 
+              v-model="filterFavoriteLevel" 
+              :options="favoriteOptions"
+              placeholder="Todos"
+              variant="ghost"
+            >
+              <!-- Custom Option Layout -->
+              <template #option="{ option }">
+                <div class="flex items-center justify-between w-full pr-3">
+                  <span class="block truncate">{{ option.label }}</span>
+                  <div class="flex items-center gap-0.5 shrink-0" v-if="option.value">
+                    <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
+                    <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
+                    <Heart class="w-3.5 h-3.5 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
+                  </div>
                 </div>
-              </div>
-            </template>
-            <!-- Custom Selected Layout -->
-            <template #selected="{ option }">
-              <div class="flex items-center gap-1.5" v-if="option && option.value">
-                <span class="block truncate text-slate-700 font-medium">{{ option.label }}</span>
-                <div class="flex items-center gap-0.5 shrink-0">
-                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
-                  <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
+              </template>
+              <!-- Custom Selected Layout -->
+              <template #selected="{ option }">
+                <div class="flex items-center gap-1.5 min-w-0" v-if="option && option.value">
+                  <span class="block truncate text-slate-700 font-medium min-w-0">{{ option.label }}</span>
+                  <div class="flex items-center gap-0.5 shrink-0">
+                    <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 1 ? 'fill-current' : 'opacity-40'" />
+                    <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 2 ? 'fill-current' : 'opacity-40'" />
+                    <Heart class="w-3 h-3 text-rose-500" :class="option.value >= 3 ? 'fill-current' : 'opacity-40'" />
+                  </div>
                 </div>
-              </div>
-              <span v-else class="block truncate text-slate-700 font-medium">Todos</span>
-            </template>
-          </CustomSelect>
+                <span v-else class="block truncate text-slate-700 font-medium min-w-0">Todos</span>
+              </template>
+            </CustomSelect>
+          </div>
         </div>
       </div>
 
@@ -451,8 +455,8 @@ definePageMeta({
         </div>
 
         <!-- Ícones Médios e Grandes (Grid) -->
-        <div v-else class="grid gap-6" :class="viewMode === 'medium' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'">
-          <div v-for="entry in filteredEntries" :key="entry.id" class="backdrop-blur-md border rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden" :class="[
+        <div v-else class="grid gap-3 md:gap-6" :class="viewMode === 'medium' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'">
+          <div v-for="entry in filteredEntries" :key="entry.id" class="backdrop-blur-md border rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 shadow-soft hover:shadow-hover transition-all group relative flex flex-col h-full overflow-hidden" :class="[
             selectedEntries.includes(entry.id) ? 'border-brand-400 ring-2 ring-brand-100' : 'border-white',
             entry.quantity === 0 ? 'bg-slate-100/80 opacity-75' : 'bg-white/80'
           ]">
@@ -489,7 +493,7 @@ definePageMeta({
             </div>
 
             <div class="flex flex-col items-center text-center gap-3 mb-5 mt-2">
-              <div v-if="entry.products?.image_url" @click="expandedImage = entry.products.image_url" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden cursor-pointer hover:scale-105 transition-transform relative group/img" :class="entry.quantity === 0 ? 'grayscale opacity-80' : ''">
+              <div v-if="entry.products?.image_url" @click="expandedImage = entry.products.image_url" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden cursor-pointer hover:scale-105 transition-transform relative group/img" :class="entry.quantity === 0 ? 'grayscale opacity-80' : ''">
                 <img :src="entry.products.image_url" alt="Foto" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-rose-900/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
                   <Search class="w-6 h-6 text-white drop-shadow-md" />
@@ -499,8 +503,8 @@ definePageMeta({
                 <PackageOpen class="w-7 h-7" />
               </div>
               <div>
-                <h3 class="font-bold text-rose-950 line-clamp-2 leading-snug" :class="viewMode === 'large' ? 'text-lg' : 'text-base'">{{ entry.products?.name || 'Produto Excluído' }}</h3>
-                <p class="text-xs text-slate-400 font-medium mt-1 tracking-wide">{{ entry.products?.brand }} {{ entry.products?.color ? `• ${entry.products.color}` : '' }}</p>
+                <h3 class="font-bold text-rose-950 line-clamp-2 leading-snug" :class="viewMode === 'large' ? 'text-sm md:text-lg' : 'text-sm md:text-base'">{{ entry.products?.name || 'Produto Excluído' }}</h3>
+                <p class="text-[10px] md:text-xs text-slate-400 font-medium mt-1 tracking-wide">{{ entry.products?.brand }} {{ entry.products?.color ? `• ${entry.products.color}` : '' }}</p>
               </div>
             </div>
 

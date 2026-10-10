@@ -240,7 +240,7 @@ const handleLogout = async () => {
       </NuxtLink>
       <NuxtLink to="/estoque" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
         <Droplet class="w-6 h-6" />
-        <span class="text-[10px] font-medium">Esmaltes</span>
+        <span class="text-[10px] font-medium whitespace-nowrap">Minha Coleção</span>
       </NuxtLink>
       <NuxtLink to="/trade" class="flex flex-col items-center gap-1 p-2 text-slate-400" active-class="text-brand-600">
         <ArrowRightLeft class="w-6 h-6" />
@@ -250,10 +250,6 @@ const handleLogout = async () => {
         <ShoppingBag class="w-6 h-6" />
         <span class="text-[10px] font-medium">Shopping</span>
       </NuxtLink>
-      <button @click="handleLogout" class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-rose-600">
-        <LogOut class="w-6 h-6" />
-        <span class="text-[10px] font-medium">Sair</span>
-      </button>
     </nav>
 
     <AppDialog />

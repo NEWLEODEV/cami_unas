@@ -322,8 +322,8 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-rose-950/40 backdrop-blur-sm">
-    <div class="bg-white rounded-[2rem] shadow-hover w-full max-w-3xl max-h-[95vh] flex flex-col overflow-hidden border border-white">
+  <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-rose-950/40 backdrop-blur-sm">
+    <div class="bg-white rounded-[2rem] shadow-hover w-full max-w-3xl max-h-[90dvh] flex flex-col overflow-hidden border border-white">
       
       <!-- Cabeçalho -->
       <div class="p-4 border-b border-brand-50 flex items-center justify-between bg-white/95 backdrop-blur-sm z-10 shrink-0">

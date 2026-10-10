@@ -250,8 +250,8 @@ definePageMeta({
         <p class="text-sm text-slate-400 mt-1">Tente mudar a cidade, estado ou os termos de busca.</p>
       </div>
 
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        <div v-for="item in paginatedItems" :key="item.id" class="h-full bg-white/80 backdrop-blur-md border border-white rounded-[2rem] p-6 shadow-soft hover:shadow-hover transition-all flex flex-col justify-between relative overflow-hidden group">
+      <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6">
+        <div v-for="item in paginatedItems" :key="item.id" class="h-full bg-white/80 backdrop-blur-md border border-white rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 shadow-soft hover:shadow-hover transition-all flex flex-col justify-between relative overflow-hidden group">
           
           <!-- Badges Topo -->
           <div class="absolute top-4 right-4 flex flex-col items-end gap-1 z-10">
@@ -267,19 +267,19 @@ definePageMeta({
           </div>
 
           <div class="flex flex-col items-center text-center gap-3 mb-5 mt-2 flex-1">
-            <div v-if="item.products?.image_url" class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden relative group/img">
+            <div v-if="item.products?.image_url" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-brand-100 overflow-hidden relative group/img">
               <img :src="item.products.image_url" alt="Foto" class="w-full h-full object-cover">
             </div>
-            <div v-else class="w-20 h-20 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0 text-brand-500 shadow-inner">
+            <div v-else class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0 text-brand-500 shadow-inner">
               <PackageOpen class="w-7 h-7" />
             </div>
             
             <div class="px-2">
-              <h3 class="font-bold text-rose-950 line-clamp-2 leading-snug text-base">{{ item.products?.name }}</h3>
-              <p class="text-xs text-slate-400 font-medium mt-1 tracking-wide">
+              <h3 class="font-bold text-rose-950 line-clamp-2 leading-snug text-sm md:text-base">{{ item.products?.name }}</h3>
+              <p class="text-[10px] md:text-xs text-slate-400 font-medium mt-1 tracking-wide">
                 <span v-if="item.products?.category">{{ item.products.category }} &bull; </span>{{ item.products?.brand }}
               </p>
-              <p v-if="item.inventory_entries?.expiration_date" class="text-xs text-slate-400 font-medium mt-0.5 tracking-wide">
+              <p v-if="item.inventory_entries?.expiration_date" class="text-[10px] md:text-xs text-slate-400 font-medium mt-0.5 tracking-wide">
                 Validade: {{ formatMonthYear(item.inventory_entries?.expiration_date) }}
               </p>
             </div>
