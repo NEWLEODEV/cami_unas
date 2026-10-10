@@ -7,8 +7,8 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase'
   ],
   supabase: {
-    url: process.env.SUPABASE_URL || 'https://urtyfejykpkfkqueyjpz.supabase.co',
-    key: process.env.SUPABASE_KEY || 'sb_publishable_73OsN8qTuT603TF00UWVIA_kqoKn5Ls',
+    url: 'https://urtyfejykpkfkqueyjpz.supabase.co',
+    key: 'sb_publishable_73OsN8qTuT603TF00UWVIA_kqoKn5Ls',
     redirect: false
   },
   postcss: {
