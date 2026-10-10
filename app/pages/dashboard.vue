@@ -265,7 +265,7 @@ definePageMeta({
     </template>
 
     <div class="space-y-6 h-full">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 -mt-4 md:-mt-6 relative z-10 p-1">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 -mt-4 md:-mt-6 relative z-10 p-1">
       <div class="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-soft flex items-center gap-4 border border-white hover:-translate-y-1 transition-transform duration-300">
         <div class="w-12 h-12 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-500 shadow-sm border border-brand-100/50">
           <Package class="w-6 h-6" />
@@ -286,23 +286,27 @@ definePageMeta({
         </div>
       </div>
 
-      <div class="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-soft flex items-center gap-4 border border-white hover:-translate-y-1 transition-transform duration-300">
-        <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500 shadow-sm border border-purple-100/50">
-          <ShoppingBag class="w-6 h-6" />
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Resumo Shopping</p>
-          <p class="text-lg font-bold text-slate-400 mt-0.5">Em breve</p>
-        </div>
-      </div>
-
-      <div class="bg-white/80 backdrop-blur-md p-6 rounded-[2rem] shadow-soft flex items-center gap-4 border border-white hover:-translate-y-1 transition-transform duration-300">
-        <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 shadow-sm border border-amber-100/50">
-          <CheckCircle2 class="w-6 h-6" />
-        </div>
-        <div>
-          <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Status: Encalhados</p>
-          <p class="text-2xl font-bold text-rose-950 mt-0.5">{{ unusedPercentage }}% <span class="text-sm font-medium text-slate-400">novos</span></p>
+      <!-- Alerta de Validade Próxima movido para o topo -->
+      <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6 hover:-translate-y-1 transition-transform duration-300">
+        <h2 class="text-lg font-bold text-rose-950 mb-4 flex items-center gap-2">
+          <AlertTriangle class="w-5 h-5 text-amber-500" />
+          Alerta de Validade Próxima
+        </h2>
+        <div class="space-y-3 overflow-y-auto pr-1" style="max-height: 180px;">
+          <div v-for="item in expiries" :key="item.id" class="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 border border-amber-100/50">
+            <div class="min-w-0 flex-1 mr-3">
+              <p class="text-sm font-bold text-rose-950 truncate">{{ item.name }}</p>
+              <p class="text-xs font-medium text-amber-600 mt-0.5">Ref: {{ item.expiration }}</p>
+            </div>
+            <div class="text-right shrink-0 bg-white/60 px-2 py-1 rounded-lg">
+              <p class="text-[11px] font-bold uppercase tracking-wider" :class="item.daysLeft <= 0 ? 'text-red-500' : 'text-amber-600'">
+                {{ item.daysLeft <= 0 ? 'Vencido' : item.daysLeft + ' dias' }}
+              </p>
+            </div>
+          </div>
+          <div v-if="expiries.length === 0" class="text-slate-400 text-sm text-center py-4">
+            Tudo sob controle! 🎉
+          </div>
         </div>
       </div>
     </div>
@@ -466,29 +470,7 @@ definePageMeta({
       <!-- Coluna 2: Entradas, Top Marcas, Favoritos -->
       <div class="space-y-6">
         
-        <!-- Validade Próxima -->
-        <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-6">
-          <h2 class="text-lg font-bold text-rose-950 mb-4 flex items-center gap-2">
-            <AlertTriangle class="w-5 h-5 text-amber-500" />
-            Alerta de Validade Próxima
-          </h2>
-          <div class="space-y-3 overflow-y-auto pr-1" style="max-height: 180px;">
-            <div v-for="item in expiries" :key="item.id" class="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 border border-amber-100/50">
-              <div class="min-w-0 flex-1 mr-3">
-                <p class="text-sm font-bold text-rose-950 truncate">{{ item.name }}</p>
-                <p class="text-xs font-medium text-amber-600 mt-0.5">Ref: {{ item.expiration }}</p>
-              </div>
-              <div class="text-right shrink-0 bg-white/60 px-2 py-1 rounded-lg">
-                <p class="text-[11px] font-bold uppercase tracking-wider" :class="item.daysLeft <= 0 ? 'text-red-500' : 'text-amber-600'">
-                  {{ item.daysLeft <= 0 ? 'Vencido' : item.daysLeft + ' dias' }}
-                </p>
-              </div>
-            </div>
-            <div v-if="expiries.length === 0" class="text-slate-400 text-sm text-center py-4">
-              Tudo sob controle! 🎉
-            </div>
-          </div>
-        </div>
+
 
         <!-- Top Marcas -->
         <div class="bg-white/80 backdrop-blur-md rounded-[2rem] shadow-soft border border-white p-5">
