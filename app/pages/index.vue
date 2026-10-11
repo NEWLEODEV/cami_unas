@@ -12,7 +12,9 @@ const slides = [
 
 const currentSlide = ref(0)
 const isPlaying = ref(true)
+const isPressed = ref(false)
 let timer = null
+let wasPlayingBeforePress = false
 
 const nextSlide = () => {
   currentSlide.value = (currentSlide.value + 1) % slides.length
@@ -48,6 +50,21 @@ const togglePlay = () => {
   }
 }
 
+const handlePressStart = () => {
+  wasPlayingBeforePress = isPlaying.value
+  isPressed.value = true
+  stopAutoPlay()
+}
+
+const handlePressEnd = () => {
+  if (isPressed.value) {
+    isPressed.value = false
+    if (wasPlayingBeforePress) {
+      startAutoPlay()
+    }
+  }
+}
+
 onMounted(() => {
   startAutoPlay()
 })
@@ -80,27 +97,59 @@ definePageMeta({
       
       <!-- Carrossel ocupando o espaço do card -->
       <div 
-        class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md group flex-1 min-h-0"
+        class="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-soft border border-white/60 bg-white/40 backdrop-blur-md flex-1 min-h-0 select-none cursor-pointer"
+        style="-webkit-touch-callout: none; -webkit-user-select: none; user-select: none;"
+        @touchstart.passive="handlePressStart"
+        @touchend="handlePressEnd"
+        @touchcancel="handlePressEnd"
+        @mousedown="handlePressStart"
+        @mouseup="handlePressEnd"
+        @mouseleave="handlePressEnd"
+        @contextmenu.prevent
       >
         <!-- Slides -->
         <div 
-          class="flex transition-transform duration-700 ease-in-out h-full w-full"
+          class="flex transition-transform duration-700 ease-in-out h-full w-full pointer-events-none"
           :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
         >
           <div v-for="(slide, index) in slides" :key="index" class="w-full h-full shrink-0 flex items-center justify-center">
             <!-- Desktop Image -->
-            <img :src="slide.desktop" alt="Slide" class="hidden md:block w-full h-full object-contain scale-100 lg:scale-[1.27] transition-transform duration-500" />
+            <img 
+              :src="slide.desktop" 
+              alt="Slide" 
+              draggable="false"
+              class="hidden md:block w-full h-full object-contain scale-100 lg:scale-[1.27] transition-transform duration-500 pointer-events-none select-none" 
+            />
             <!-- Mobile Image -->
-            <img :src="slide.mobile" alt="Slide Mobile" class="md:hidden w-full h-full object-contain scale-100 transition-transform duration-500" />
+            <img 
+              :src="slide.mobile" 
+              alt="Slide Mobile" 
+              draggable="false"
+              class="md:hidden w-full h-full object-contain scale-100 transition-transform duration-500 pointer-events-none select-none" 
+            />
           </div>
         </div>
         
-        <!-- Controles Laterais -->
-        <button @click="prevSlide" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/70 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-brand-600 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
-          <ChevronLeft class="w-6 h-6 ml-[-2px]" />
+        <!-- Controles Laterais (Sempre Visíveis) -->
+        <button 
+          @click.stop="prevSlide" 
+          @touchstart.stop 
+          @touchend.stop 
+          @mousedown.stop 
+          class="absolute left-2.5 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white active:scale-95 backdrop-blur-md rounded-full flex items-center justify-center text-brand-600 shadow-md opacity-100 transition-all duration-300 hover:scale-110 z-20"
+          title="Slide anterior"
+        >
+          <ChevronLeft class="w-5 h-5 md:w-6 md:h-6 ml-[-2px]" />
         </button>
-        <button @click="nextSlide" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/70 hover:bg-white backdrop-blur-md rounded-full flex items-center justify-center text-brand-600 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
-          <ChevronRight class="w-6 h-6 mr-[-2px]" />
+        <button 
+          @click.stop="nextSlide" 
+          @touchstart.stop 
+          @touchend.stop 
+          @mousedown.stop 
+          class="absolute right-2.5 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/80 hover:bg-white active:scale-95 backdrop-blur-md rounded-full flex items-center justify-center text-brand-600 shadow-md opacity-100 transition-all duration-300 hover:scale-110 z-20"
+          title="Próximo slide"
+        >
+          <ChevronRight class="w-5 h-5 md:w-6 md:h-6 mr-[-2px]" />
         </button>
         
         <!-- Controles de Reprodução e Indicadores (Apenas Desktop) -->
