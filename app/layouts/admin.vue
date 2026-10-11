@@ -74,5 +74,7 @@ const handleLogout = async () => {
         <span class="text-[10px] font-medium">App</span>
       </NuxtLink>
     </nav>
+
+    <AppDialog />
   </div>
 </template>

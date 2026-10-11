@@ -66,7 +66,7 @@ const newProduct = ref({
   unit_measure: 'Mililitro',
   size_variation: '',
   initial_quantity: 1,
-  initial_price: 0.00,
+  initial_price: '',
   initial_purchase_date: new Date().toISOString().split('T')[0],
   initial_expiration_date: '',
   inventory_id: null
@@ -113,7 +113,7 @@ const resetForm = () => {
   customBrand.value = ''
   newProduct.value = {
     category: 'Esmalte', brand: '', color: '', collection: '', description: '', unit_measure: 'Mililitro', size_variation: '',
-    initial_quantity: 1, initial_price: 0.00, initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '', image_url: null, inventory_id: null
+    initial_quantity: 1, initial_price: '', initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '', image_url: null, inventory_id: null
   }
   selectedImageFile.value = null
   imageUrlInput.value = ''
@@ -158,10 +158,10 @@ const openEditModal = async (productId, inventoryEntryId = null) => {
     brand: product.brand,
     color: product.color,
     collection: product.collection || '',
-    description: product.description || '',
+    description: (product.description || product.barcode || '').slice(0, 130),
     unit_measure: product.unit_measure,
     size_variation: product.size_variation || '',
-    initial_quantity: 1, initial_price: 0.00, initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '',
+    initial_quantity: 1, initial_price: '', initial_purchase_date: new Date().toISOString().split('T')[0], initial_expiration_date: '',
     image_url: product.image_url || null,
     inventory_id: null
   }
@@ -181,7 +181,7 @@ const openEditModal = async (productId, inventoryEntryId = null) => {
   if (invData && invData.length > 0) {
     const entry = invData[0]
     newProduct.value.initial_quantity = entry.quantity
-    newProduct.value.initial_price = entry.purchase_price
+    newProduct.value.initial_price = (entry.purchase_price !== null && entry.purchase_price !== undefined) ? entry.purchase_price : ''
     newProduct.value.initial_purchase_date = entry.purchase_date
     if (entry.expiration_date) {
       const [year, month] = entry.expiration_date.split('-')
@@ -204,6 +204,7 @@ const saveProduct = async () => {
   newProduct.value.collection = formatTitleCase(newProduct.value.collection);
 
   const generatedName = `${finalBrand} ${newProduct.value.color}`.trim()
+  const cleanDescription = newProduct.value.description ? newProduct.value.description.trim().slice(0, 130) : null
 
   const payload = {
     name: generatedName,
@@ -211,7 +212,7 @@ const saveProduct = async () => {
     brand: finalBrand,
     color: newProduct.value.color,
     collection: newProduct.value.collection,
-    // description: newProduct.value.description, // Comentado temporariamente até a coluna ser criada no banco
+    description: cleanDescription,
     unit_measure: newProduct.value.unit_measure,
     size_variation: newProduct.value.size_variation
   }
@@ -246,11 +247,23 @@ const saveProduct = async () => {
 
   let error;
   if (isEditing.value) {
-    const { error: updateError } = await supabase
+    let updateRes = await supabase
       .from('products')
       .update(payload)
       .eq('id', editingId.value)
-    error = updateError
+
+    // Se a coluna description ainda não existir na tabela products, faz fallback automático para barcode
+    if (updateRes.error && (updateRes.error.code === '42703' || updateRes.error.message?.includes('description'))) {
+      const fallbackPayload = { ...payload }
+      delete fallbackPayload.description
+      fallbackPayload.barcode = cleanDescription
+      updateRes = await supabase
+        .from('products')
+        .update(fallbackPayload)
+        .eq('id', editingId.value)
+    }
+
+    error = updateRes.error
     
     if (!error && newProduct.value.inventory_id) {
       let expDate = null;
@@ -263,7 +276,7 @@ const saveProduct = async () => {
         .from('inventory_entries')
         .update({
           quantity: parseInt(newProduct.value.initial_quantity) >= 0 ? parseInt(newProduct.value.initial_quantity) : 1,
-          purchase_price: parseFloat(newProduct.value.initial_price) || 0,
+          purchase_price: (newProduct.value.initial_price !== '' && newProduct.value.initial_price !== null && !isNaN(parseFloat(newProduct.value.initial_price))) ? parseFloat(newProduct.value.initial_price) : 0,
           purchase_date: newProduct.value.initial_purchase_date,
           expiration_date: expDate
         })
@@ -271,12 +284,24 @@ const saveProduct = async () => {
     }
   } else {
     payload.sku = `PRD-${Date.now()}`
-    const { data: insertedProduct, error: insertError } = await supabase
+    let insertRes = await supabase
       .from('products')
       .insert([payload])
       .select()
       
-    error = insertError
+    // Se a coluna description ainda não existir na tabela products, faz fallback automático para barcode
+    if (insertRes.error && (insertRes.error.code === '42703' || insertRes.error.message?.includes('description'))) {
+      const fallbackPayload = { ...payload }
+      delete fallbackPayload.description
+      fallbackPayload.barcode = cleanDescription
+      insertRes = await supabase
+        .from('products')
+        .insert([fallbackPayload])
+        .select()
+    }
+
+    error = insertRes.error
+    const insertedProduct = insertRes.data
 
     // Insert initial stock if product was created successfully
     if (!error && insertedProduct && insertedProduct.length > 0) {
@@ -291,7 +316,7 @@ const saveProduct = async () => {
       const inventoryPayload = {
         product_id: productId,
         quantity: parseInt(newProduct.value.initial_quantity) >= 0 ? parseInt(newProduct.value.initial_quantity) : 1,
-        purchase_price: parseFloat(newProduct.value.initial_price) || 0,
+        purchase_price: (newProduct.value.initial_price !== '' && newProduct.value.initial_price !== null && !isNaN(parseFloat(newProduct.value.initial_price))) ? parseFloat(newProduct.value.initial_price) : 0,
         purchase_date: newProduct.value.initial_purchase_date,
         expiration_date: expDate
       }
@@ -371,8 +396,8 @@ defineExpose({
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Cor *</label>
-            <input v-model="newProduct.color" required type="text" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors" placeholder="Ex: Maçã do Amor">
+            <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Cor / Nome *</label>
+            <input v-model="newProduct.color" required type="text" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors" placeholder="Ex: Maçã do Amor ou Casco de Cavalo">
           </div>
 
           <div>
@@ -393,8 +418,19 @@ defineExpose({
 
         <!-- Descrição -->
         <div>
-          <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Descrição / Detalhes</label>
-          <textarea v-model="newProduct.description" rows="2" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors" placeholder="Informações adicionais (opcional)..."></textarea>
+          <div class="flex items-center justify-between mb-0.5">
+            <label class="block text-[11px] font-bold text-slate-700">Descrição / Detalhes</label>
+            <span class="text-[10px] font-medium" :class="(newProduct.description || '').length >= 130 ? 'text-rose-500 font-bold' : 'text-slate-400'">
+              {{ (newProduct.description || '').length }}/130
+            </span>
+          </div>
+          <textarea 
+            v-model="newProduct.description" 
+            maxlength="130" 
+            rows="2" 
+            class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors" 
+            placeholder="Informações adicionais (opcional, máximo 130 caracteres)..."
+          ></textarea>
         </div>
 
         <!-- Estoque (4 colunas) -->
@@ -409,8 +445,8 @@ defineExpose({
               <input v-model="newProduct.initial_quantity" required type="number" min="0" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors">
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Custo Unitário (R$) *</label>
-              <input v-model="newProduct.initial_price" required type="number" step="0.01" min="0" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors">
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Custo Unitário (R$)</label>
+              <input v-model="newProduct.initial_price" type="number" step="0.01" min="0" class="w-full px-2.5 py-1.5 text-sm rounded-lg border border-surface-200 focus:ring-2 focus:ring-brand-500 transition-colors" placeholder="Opcional">
             </div>
             <div>
               <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Data da Compra *</label>

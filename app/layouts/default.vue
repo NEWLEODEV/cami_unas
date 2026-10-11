@@ -3,99 +3,116 @@ import { LayoutDashboard, Home, Package, Droplet, LogOut, LogIn, Instagram, Phon
 import { ref, onMounted, computed, onUnmounted, watchEffect } from 'vue'
 
 const supabase = useSupabaseClient()
+const supabaseUser = useSupabaseUser()
+const currentUser = ref(null)
 const userName = ref('')
 const isAdmin = ref(false)
 const isUserMenuOpen = ref(false)
 const pendingRequestsCount = ref(0)
 let notificationChannel = null
+let authSubscription = null
 
-let authStateListener = null
+const isLoggedIn = computed(() => !!currentUser.value || !!supabaseUser.value)
+
+const loadUserData = async (userObj) => {
+  if (!userObj) return
+
+  // Buscar Notificações
+  const fetchPendingRequestsCount = async () => {
+    const { data, error } = await supabase
+      .from('trade_requests')
+      .select('id')
+      .eq('target_user_id', userObj.id)
+      .eq('status', 'pending')
+      
+    if (!error && data) {
+      pendingRequestsCount.value = data.length
+    }
+  }
+  
+  await fetchPendingRequestsCount()
+  
+  if (!notificationChannel) {
+    notificationChannel = supabase.channel('notification-updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'trade_requests', filter: `target_user_id=eq.${userObj.id}` },
+        () => fetchPendingRequestsCount()
+      )
+      .subscribe()
+  }
+
+  // Buscar Perfil
+  const { data } = await supabase
+    .from('profiles')
+    .select('name, is_admin')
+    .eq('id', userObj.id)
+    .single()
+    
+  let fullName = data?.name || userObj.user_metadata?.name
+  
+  const userEmail = (userObj.email || '').trim().toLowerCase()
+  const isOwner = userEmail === 'camilatavares.arq@gmail.com'
+
+  if (data) {
+    isAdmin.value = data.is_admin === true || isOwner
+  } else {
+    isAdmin.value = isOwner
+  }
+  
+  if (fullName) {
+    const parts = fullName.trim().split(/\s+/)
+    if (parts.length <= 1) {
+      userName.value = fullName
+    } else if (parts.length === 2) {
+      userName.value = fullName
+    } else {
+      // Lista de primeiros nomes compostos comuns no Brasil
+      const compositePrefixes = ['ana', 'maria', 'joão', 'joao', 'josé', 'jose', 'pedro', 'luiz', 'luis', 'carlos', 'paulo', 'antônio', 'antonio', 'marcos', 'julio']
+      let firstName = parts[0]
+      
+      // Se o primeiro nome for um prefixo composto comum, pegamos os dois primeiros
+      if (compositePrefixes.includes(parts[0].toLowerCase())) {
+        firstName = parts[0] + ' ' + parts[1]
+      }
+      
+      const lastName = parts[parts.length - 1]
+      userName.value = `${firstName} ${lastName}`
+    }
+  } else {
+    userName.value = 'Usuário'
+  }
+}
 
 onMounted(async () => {
   const { data: authData } = await supabase.auth.getUser()
-  const currentUser = authData?.user
-  
-  if (currentUser) {
-    // Buscar Notificações
-    const fetchPendingRequestsCount = async () => {
-      const { data, error } = await supabase
-        .from('trade_requests')
-        .select('id')
-        .eq('target_user_id', currentUser.id)
-        .eq('status', 'pending')
-        
-      if (!error && data) {
-        pendingRequestsCount.value = data.length
-      }
-    }
-    
-    await fetchPendingRequestsCount()
-    
-    if (!notificationChannel) {
-      notificationChannel = supabase.channel('notification-updates')
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'trade_requests', filter: `target_user_id=eq.${currentUser.id}` },
-          () => fetchPendingRequestsCount()
-        )
-        .subscribe()
-    }
+  const foundUser = authData?.user || supabaseUser.value
 
-    // Buscar Perfil
-    const { data } = await supabase
-      .from('profiles')
-      .select('name, is_admin')
-      .eq('id', currentUser.id)
-      .single()
-      
-    let fullName = data?.name || currentUser.user_metadata?.name
-    
-    const userEmail = (currentUser.email || '').trim().toLowerCase()
-    const isOwner = userEmail === 'camilatavares.arq@gmail.com'
-
-    
-    if (data) {
-      isAdmin.value = data.is_admin === true || isOwner
-    } else {
-      isAdmin.value = isOwner
-    }
-    
-    console.log('--- DEBUG DO ADMIN ---')
-    console.log('Email detectado:', userEmail)
-    console.log('Data do banco:', data)
-    console.log('isOwner (hardcode):', isOwner)
-    console.log('isAdmin final:', isAdmin.value)
-    
-    if (fullName) {
-      const parts = fullName.trim().split(/\s+/)
-      if (parts.length <= 1) {
-        userName.value = fullName
-      } else if (parts.length === 2) {
-        userName.value = fullName
-      } else {
-        // Lista de primeiros nomes compostos comuns no Brasil
-        const compositePrefixes = ['ana', 'maria', 'joão', 'joao', 'josé', 'jose', 'pedro', 'luiz', 'luis', 'carlos', 'paulo', 'antônio', 'antonio', 'marcos', 'julio']
-        let firstName = parts[0]
-        
-        // Se o primeiro nome for um prefixo composto comum, pegamos os dois primeiros
-        if (compositePrefixes.includes(parts[0].toLowerCase())) {
-          firstName = parts[0] + ' ' + parts[1]
-        }
-        
-        const lastName = parts[parts.length - 1]
-        userName.value = `${firstName} ${lastName}`
-      }
-    } else {
-      // Fallback genérico caso o usuário não tenha cadastrado um nome
-      userName.value = 'Usuário'
-    }
+  if (foundUser) {
+    currentUser.value = foundUser
+    await loadUserData(foundUser)
   } else {
+    currentUser.value = null
     userName.value = 'Visitante'
   }
+
+  const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user) {
+      currentUser.value = session.user
+      await loadUserData(session.user)
+    } else {
+      currentUser.value = null
+      userName.value = 'Visitante'
+      isAdmin.value = false
+      pendingRequestsCount.value = 0
+    }
+  })
+  authSubscription = listener?.subscription
 })
 
 onUnmounted(() => {
   if (notificationChannel) supabase.removeChannel(notificationChannel)
+  if (authSubscription) authSubscription.unsubscribe()
 })
 
 const userInitial = computed(() => {
@@ -105,6 +122,10 @@ const userInitial = computed(() => {
 
 const handleLogout = async () => {
   await supabase.auth.signOut()
+  currentUser.value = null
+  userName.value = 'Visitante'
+  isAdmin.value = false
+  pendingRequestsCount.value = 0
   navigateTo('/login')
 }
 </script>
@@ -206,22 +227,33 @@ const handleLogout = async () => {
           
           <!-- Dropdown Menu -->
           <div v-if="isUserMenuOpen" class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-            <NuxtLink to="/trade" class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
-              <div class="flex items-center gap-3">
-                <Bell class="w-4 h-4 text-slate-400" />
-                Solicitações
-              </div>
-              <span v-if="pendingRequestsCount > 0" class="w-5 h-5 flex items-center justify-center bg-rose-500 text-white text-[10px] font-bold rounded-full shrink-0">{{ pendingRequestsCount }}</span>
-            </NuxtLink>
-            <NuxtLink to="/perfil" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
-              <User class="w-4 h-4 text-slate-400" />
-              Visualizar Perfil
-            </NuxtLink>
-            <div class="border-t border-slate-100 my-1"></div>
-            <button @click.stop="isUserMenuOpen = false; handleLogout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors font-medium text-left">
-              <LogOut class="w-4 h-4 text-rose-400" />
-              Sair
-            </button>
+            <!-- Opções quando logado -->
+            <template v-if="isLoggedIn">
+              <NuxtLink to="/trade" class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
+                <div class="flex items-center gap-3">
+                  <Bell class="w-4 h-4 text-slate-400" />
+                  Solicitações
+                </div>
+                <span v-if="pendingRequestsCount > 0" class="w-5 h-5 flex items-center justify-center bg-rose-500 text-white text-[10px] font-bold rounded-full shrink-0">{{ pendingRequestsCount }}</span>
+              </NuxtLink>
+              <NuxtLink to="/perfil" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors font-medium" @click="isUserMenuOpen = false">
+                <User class="w-4 h-4 text-slate-400" />
+                Visualizar Perfil
+              </NuxtLink>
+              <div class="border-t border-slate-100 my-1"></div>
+              <button @click.stop="isUserMenuOpen = false; handleLogout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors font-medium text-left">
+                <LogOut class="w-4 h-4 text-rose-400" />
+                Sair
+              </button>
+            </template>
+
+            <!-- Opções quando visitante (não logado) -->
+            <template v-else>
+              <NuxtLink to="/login" class="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-600 hover:bg-brand-50 transition-colors font-semibold" @click="isUserMenuOpen = false">
+                <LogIn class="w-4 h-4 text-brand-500" />
+                Fazer Login
+              </NuxtLink>
+            </template>
           </div>
         </div>
       </header>
