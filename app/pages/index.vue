@@ -76,7 +76,7 @@ definePageMeta({
       <p class="text-slate-600 font-medium text-lg truncate">Bem-vindo(a) ao Universo CAMIS!</p>
     </template>
 
-    <div class="h-[calc(100dvh-11.5rem)] md:h-full w-full flex flex-col justify-between gap-1 lg:gap-0 overflow-hidden" style="font-family: 'Poppins', sans-serif;">
+    <div class="h-[calc(100dvh-11.5rem)] md:h-full w-full flex flex-col justify-between gap-1 lg:gap-0" style="font-family: 'Poppins', sans-serif;">
       
       <!-- Carrossel ocupando o espaço do card -->
       <div 
@@ -103,30 +103,30 @@ definePageMeta({
           <ChevronRight class="w-6 h-6 mr-[-2px]" />
         </button>
         
-        <!-- Controles de Reprodução e Indicadores -->
-        <div class="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 md:gap-4 bg-white/60 backdrop-blur-md px-3 py-1.5 md:px-5 md:py-2.5 rounded-full shadow-sm border border-white/50">
+        <!-- Controles de Reprodução e Indicadores (Apenas Desktop) -->
+        <div class="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 items-center gap-4 bg-white/60 backdrop-blur-md px-5 py-2.5 rounded-full shadow-sm border border-white/50">
           <!-- Play / Pause -->
           <button @click="togglePlay" class="text-brand-600 hover:text-brand-700 transition-colors flex items-center justify-center hover:scale-110" :title="isPlaying ? 'Pausar' : 'Reproduzir'">
-            <Pause v-if="isPlaying" class="w-3 h-3 md:w-4 md:h-4 fill-current" />
-            <Play v-else class="w-3 h-3 md:w-4 md:h-4 fill-current" />
+            <Pause v-if="isPlaying" class="w-4 h-4 fill-current" />
+            <Play v-else class="w-4 h-4 fill-current" />
           </button>
           
-          <div class="w-px h-3 md:h-4 bg-brand-200"></div>
+          <div class="w-px h-4 bg-brand-200"></div>
 
           <!-- Indicadores (Bolinhas) -->
-          <div class="flex items-center gap-2 md:gap-3">
+          <div class="flex items-center gap-3">
             <button 
               v-for="(_, index) in slides" 
               :key="'dot-'+index"
               @click="goToSlide(index); stopAutoPlay()"
-              class="h-1.5 md:h-2.5 rounded-full transition-all duration-500 shadow-sm"
-              :class="currentSlide === index ? 'bg-brand-500 w-4 md:w-8' : 'bg-white hover:bg-brand-100 w-1.5 md:w-2.5'"
+              class="h-2.5 rounded-full transition-all duration-500 shadow-sm"
+              :class="currentSlide === index ? 'bg-brand-500 w-8' : 'bg-white hover:bg-brand-100 w-2.5'"
             ></button>
           </div>
         </div>
       </div>
 
-      <div class="mt-1 lg:mt-6 pb-2 text-center text-slate-400 text-[10px] sm:text-xs md:text-sm font-medium shrink-0 leading-relaxed">
+      <div class="mt-1 lg:mt-6 pb-2 text-center text-slate-400 text-[10px] sm:text-xs md:text-sm font-medium shrink-0 leading-relaxed translate-y-3.5 md:translate-y-0">
         <span class="block md:inline">© 2026 Desenvolvido por <a href="https://www.instagram.com/leonardo.bezerra.dev/" target="_blank" class="hover:text-brand-500 transition-colors"><b>Leonardo Bezerra</b></a></span>
         <span class="hidden md:inline"> - </span>
         <span class="block md:inline">Todos os direitos reservados.</span>
