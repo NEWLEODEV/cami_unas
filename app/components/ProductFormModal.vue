@@ -76,7 +76,7 @@ const currentBrandOptions = computed(() => {
   if (newProduct.value.category === 'Maquiagem') {
     return ['Genérica']
   }
-  if (['Utensílio', 'Descartável', 'Outros'].includes(newProduct.value.category)) {
+  if (['Utensílio', 'Descartável'].includes(newProduct.value.category)) {
     return ['Genérico']
   }
   return availableBrands.value
@@ -85,8 +85,12 @@ const currentBrandOptions = computed(() => {
 watch(() => newProduct.value.category, (newCategory) => {
   if (newCategory === 'Maquiagem') {
     selectedBrand.value = 'Genérica'
-  } else if (['Utensílio', 'Descartável', 'Outros'].includes(newCategory)) {
+  } else if (['Utensílio', 'Descartável'].includes(newCategory)) {
     selectedBrand.value = 'Genérico'
+  } else if (newCategory === 'Outros') {
+    if (selectedBrand.value !== 'Outra' && !availableBrands.value.includes(selectedBrand.value)) {
+      selectedBrand.value = 'Genérico'
+    }
   } else {
     if (!availableBrands.value.includes(selectedBrand.value) && selectedBrand.value !== 'Outra') {
       selectedBrand.value = availableBrands.value[0] || predefinedBrands[0]
@@ -95,11 +99,20 @@ watch(() => newProduct.value.category, (newCategory) => {
 })
 
 const fetchMetadata = async () => {
-  const { data } = await supabase.from('products').select('name, brand')
-  if (data) {
-    const dbBrands = data.map(p => p.brand).filter(Boolean)
-    availableBrands.value = [...new Set([...predefinedBrands, ...dbBrands])].sort()
+  let localBrands = []
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const stored = localStorage.getItem('cami_unas_custom_brands')
+      if (stored) localBrands = JSON.parse(stored)
+    } catch (e) {
+      console.error('Erro ao ler marcas do localStorage:', e)
+    }
   }
+
+  const { data } = await supabase.from('products').select('brand')
+  const dbBrands = data ? data.map(p => p.brand).filter(Boolean) : []
+  const allBrands = [...new Set([...predefinedBrands, ...dbBrands, ...localBrands])].filter(Boolean)
+  availableBrands.value = allBrands.sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }))
 }
 
 onMounted(() => {
@@ -130,6 +143,7 @@ const formatExpirationDateInput = (e) => {
 
 const openNewModal = () => {
   resetForm()
+  fetchMetadata()
   isModalOpen.value = true
 }
 
@@ -145,7 +159,7 @@ const openEditModal = async (productId, inventoryEntryId = null) => {
   }
   const product = productData
   
-  if (predefinedBrands.includes(product.brand)) {
+  if (availableBrands.value.includes(product.brand)) {
     selectedBrand.value = product.brand
     customBrand.value = ''
   } else {
@@ -196,9 +210,30 @@ const openEditModal = async (productId, inventoryEntryId = null) => {
 const saveProduct = async () => {
   isSubmitting.value = true
   
-  let finalBrand = selectedBrand.value === 'Outra' ? customBrand.value : selectedBrand.value;
+  let finalBrand = selectedBrand.value === 'Outra' ? (customBrand.value || '').trim() : selectedBrand.value;
   finalBrand = formatTitleCase(finalBrand);
   newProduct.value.brand = finalBrand;
+
+  if (finalBrand && selectedBrand.value === 'Outra') {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const stored = localStorage.getItem('cami_unas_custom_brands')
+        const localList = stored ? JSON.parse(stored) : []
+        if (!localList.includes(finalBrand)) {
+          localList.push(finalBrand)
+          localStorage.setItem('cami_unas_custom_brands', JSON.stringify(localList))
+        }
+      } catch (e) {
+        console.error('Erro ao salvar marca no localStorage:', e)
+      }
+    }
+
+    if (!availableBrands.value.includes(finalBrand)) {
+      availableBrands.value = [...new Set([...availableBrands.value, finalBrand])].sort((a, b) =>
+        a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
+      )
+    }
+  }
   
   newProduct.value.color = formatTitleCase(newProduct.value.color);
   newProduct.value.collection = formatTitleCase(newProduct.value.collection);
@@ -333,6 +368,7 @@ const saveProduct = async () => {
   
   isSubmitting.value = false
   if (!error) {
+    await fetchMetadata()
     isModalOpen.value = false
     emit('saved')
   } else {

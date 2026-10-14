@@ -12,6 +12,7 @@ const searchQuery = ref('')
 const viewMode = ref('medium') // 'medium', 'large', 'details'
 
 const filterBrand = ref('')
+const filterCategory = ref('')
 const filterCollection = ref('')
 const filterFavoriteLevel = ref('')
 
@@ -148,6 +149,16 @@ const uniqueEntryBrands = computed(() => {
   return Array.from(map.values()).sort()
 })
 
+const uniqueEntryCategories = computed(() => {
+  const categories = entries.value.map(e => e.products?.category).filter(Boolean)
+  const map = new Map()
+  categories.forEach(c => {
+    const lower = c.trim().toLowerCase()
+    if (!map.has(lower)) map.set(lower, c.trim())
+  })
+  return Array.from(map.values()).sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }))
+})
+
 const uniqueCollections = computed(() => {
   const collections = entries.value.map(e => e.products?.collection).filter(Boolean)
   const map = new Map()
@@ -176,6 +187,11 @@ const filteredEntries = computed(() => {
   if (filterBrand.value) {
     const filterLower = filterBrand.value.toLowerCase()
     result = result.filter(entry => entry.products?.brand?.toLowerCase() === filterLower)
+  }
+
+  if (filterCategory.value) {
+    const filterLower = filterCategory.value.toLowerCase()
+    result = result.filter(entry => entry.products?.category?.toLowerCase() === filterLower)
   }
 
   if (filterCollection.value) {
@@ -228,7 +244,7 @@ const deleteSelected = async () => {
   }
 }
 
-watch([searchQuery, filterBrand, filterCollection, filterFavoriteLevel], () => {
+watch([searchQuery, filterBrand, filterCategory, filterCollection, filterFavoriteLevel], () => {
   selectedEntries.value = []
 })
 
@@ -272,6 +288,20 @@ definePageMeta({
             <CustomSelect 
               v-model="filterBrand" 
               :options="uniqueEntryBrands"
+              placeholder="Todas"
+              variant="ghost"
+            />
+          </div>
+        </div>
+        
+        <div class="w-px h-4 bg-slate-200 shrink-0"></div>
+
+        <div class="flex-1 flex items-center gap-1 md:gap-2 min-w-0 px-2">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Categoria</span>
+          <div class="flex-1 min-w-0">
+            <CustomSelect 
+              v-model="filterCategory" 
+              :options="uniqueEntryCategories"
               placeholder="Todas"
               variant="ghost"
             />
