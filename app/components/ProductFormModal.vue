@@ -384,7 +384,7 @@ defineExpose({
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-3">
           <div>
             <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Categoria *</label>
-            <CustomSelect v-model="newProduct.category" :options="['Esmalte', 'Base/Tratamento', 'Maquiagem', 'Utensílio', 'Descartável', 'Outros']" placeholder="Categoria" variant="outline" :required="true" :showEmptyOption="false" />
+            <CustomSelect v-model="newProduct.category" :options="['Esmalte', 'Base/Top Coat/Secante', 'Cuidados', 'Maquiagem', 'Utensílio', 'Descartável', 'Outros']" placeholder="Categoria" variant="outline" :required="true" :showEmptyOption="false" />
           </div>
           
           <div>
